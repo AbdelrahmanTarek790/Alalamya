@@ -4,10 +4,9 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 exports.createBuyValidator = [
   check('supplayr')
-    .isLength({ min: 3 })
-    .withMessage('must be at least 3 chars')
-    .notEmpty()
-    .withMessage('name required'),
+  .isMongoId()
+  .withMessage('Invalid user id format'),
+
     
   check('E_wieght')
     .notEmpty()
@@ -23,16 +22,16 @@ exports.createBuyValidator = [
     check('pay')
     .notEmpty()
     .withMessage('price is required'),
-   
-    check('pay_on')
+
+    check('Size')
     .notEmpty()
     .withMessage('price is required'),
     
-  check('user')
+   check('user')
    .isMongoId()
    .withMessage('Invalid user id format'),
 
-  check('Product')
+   check('Product')
     .isMongoId()
     .withMessage('Invalid product id format'),
   

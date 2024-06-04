@@ -14,7 +14,7 @@ exports.getBuys = factory.getAll(Buy,'Buy');
 // @desc    Get specific Buy by id
 // @route   GET /api/v1/Buys/:id
 // @access  Public
-exports.getBuy = factory.getOne(Buy);
+exports.getBuy = factory.getOne(Buy,'Supplayr');
 
 // @desc    Create Buy
 // @route   POST  /api/v1/Buys

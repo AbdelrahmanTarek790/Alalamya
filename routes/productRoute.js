@@ -20,7 +20,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getProducts)
+  .get(getProductValidator,getProducts)
   .post(
     authService.protect,
     authService.allowedTo('admin', 'manager'),

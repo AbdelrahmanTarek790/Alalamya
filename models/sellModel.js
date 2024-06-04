@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const User = require('./userModel');
+const Product = require('./ProductModel');
+const Clint =require ('./ClintModel');
 
 
 const SellSchema = new mongoose.Schema(
@@ -8,9 +11,8 @@ const SellSchema = new mongoose.Schema(
       ref: 'User',
     },
     clint: {
-      type: String,
-      trim: true,
-      required: [true, 'name required'],
+      type: mongoose.Schema.ObjectId,
+      ref: 'Clint',
     },
     
     o_wieght: {
@@ -21,7 +23,7 @@ const SellSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Product',
     },
-    size: {
+    size_o: {
       type: Number,
       required: true,
     },
@@ -29,7 +31,7 @@ const SellSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    price_Kilo: {
+    priceForKilo: {
       type: Number,
       required: true,
     },
@@ -37,47 +39,75 @@ const SellSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    pay:{
+    pay_now:{
       type: Number,
       required: true,
     },
-    pay_on:{
-      type: Number,
-      required: true,
-    },
-
+    
   },
   { timestamps: true }
 );
 SellSchema.pre(/^find/, function (next){
-  this.populate({path: 'user' , select: 'name -_id'});
-   
-  this.populate({path: 'prodcut' , select: 'name avg_price wight -_id'});
+  this.populate({path: 'user' , select: 'name -_id'})
+
+  .populate({path: 'prodcut' , select: 'name avg_price wight -_id'})
+  
+  .populate({path: 'clint' , select: 'clint_name money_pay money_on -_id'});
+
   next();
 })  
-SellSchema.statics.calcAveragePrice = async function (
-  productId
+SellSchema.statics.updateProductWeightS = async function(productId, weightSold) {
+  await Product.findByIdAndUpdate(productId, {
+     $inc:{wieght: -weightSold},
+  });
+};
+
+SellSchema.statics.AddmoneyAndtakeMoneyS = async function (
+  clintId
 ) {
-  const result = await this.aggregate([
+  const result2 = await this.aggregate([
     // Stage 1 : get all Sells in specific product
     {
-      $match: { product: productId },
+      $match: { clint: clintId },
     },
-    // Stage 2: Grouping Sells based on productID and calc avgPrices, wight
+    // Stage 2: Grouping Sells based on clintId and calc Prices, wight
     {
       $group: {
-        _id: 'product',
-        wieght: { $subtract: 'o_wieght' },
+        _id: '$clint',
+        monyePay: { $sum:'$pay_now' },
+        totalMonye:{$sum:'$price_allQuantity'}
       },
     },
   ]);
 
-  // console.log(result);
   
+  if (result2.length > 0) {
+    
+    await Clint.findByIdAndUpdate(clintId, {
+      money_pay:result2[0].monyePay,
+      total_monye:result2[0].totalMonye,
+    });
+    console.log(result2[0].monyePay);
+  } 
+ 
+};
+SellSchema.statics.takeMoney_ds = async function(clintId,monyeall) {
+  await Clint.findByIdAndUpdate(clintId, {
+     $inc:{money_on: +monyeall},
+  });
+};
+
+SellSchema.statics.takeMoney_bs = async function(clintId,monyePay) {
+  await Clint.findByIdAndUpdate(clintId, {
+     $inc:{money_on: -monyePay},
+  });
 };
 
 SellSchema.post('save', async function () {
-  await this.constructor.calcAveragePrice(this.product);
+   await this.constructor.updateProductWeightS(this.product, this.o_wieght);
+  await this.constructor.AddmoneyAndtakeMoneyS(this.clint);
+  await this.constructor.takeMoney_ds(this.clint,this.price_allQuantity);
+  await this.constructor.takeMoney_bs(this.clint,this.pay_now);
 });
   
 

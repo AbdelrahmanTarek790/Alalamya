@@ -3,20 +3,20 @@ const { check, body } = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 exports.createSellValidator = [
+
   check('clint')
-    .isLength({ min: 3 })
-    .withMessage('must be at least 3 chars')
-    .notEmpty()
-    .withMessage('name required'),
-    
+  .isMongoId()
+  .withMessage('Invalid user id format'),
+
   check('E_wieght')
     .notEmpty()
     .withMessage('wieght is required'),
+
     check('price_Kilo')
     .notEmpty()
     .withMessage('price is required'),
     
-    check('price_all')
+    check('price_allQuntity')
     .notEmpty()
     .withMessage('price is required'),
     
@@ -24,7 +24,7 @@ exports.createSellValidator = [
     .notEmpty()
     .withMessage('price is required'),
    
-    check('pay_on')
+    check('product_code')
     .notEmpty()
     .withMessage('price is required'),
     

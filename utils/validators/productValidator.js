@@ -8,9 +8,6 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage('Product required'),
     
-  check('size')
-    .notEmpty()
-    .withMessage('Product description is required'),
   
   validatorMiddleware,
 ];

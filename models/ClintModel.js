@@ -1,31 +1,37 @@
 const mongoose = require('mongoose');
 
 
-const productSchema = new mongoose.Schema(
+const clintSchema = new mongoose.Schema(
   {
-    name: {
+    
+    clint_name: {
       type: String,
       trim: true,
       required: [true, 'name required'],
     },
+
+    money_on: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    money_pay: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    total_monye: {
+      type: Number,
+      required: true,
+      default:0,
+    },
     
-   
-    avg_price: {
-      type: Number,
-      required: true,
-      default:0,
-    },
-    wieght: {
-      type: Number,
-      required: true,
-      default:0,
-    },
 
   },
   { timestamps: true }
 );
 
 
-const Product = mongoose.model('Product', productSchema);
+const Clint = mongoose.model('Clint', clintSchema);
 
-module.exports = Product;
+module.exports = Clint ;

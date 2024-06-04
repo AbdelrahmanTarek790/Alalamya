@@ -5,7 +5,6 @@ const Sell = require('../models/sellModel');
 
 
 
-
 // @desc    Get list of Sell
 // @route   GET /api/v1/Sells
 // @access  Public
@@ -14,7 +13,7 @@ exports.getSells = factory.getAll(Sell,'Sell');
 // @desc    Get specific Sell by id
 // @route   GET /api/v1/Sells/:id
 // @access  Public
-exports.getSell = factory.getOne(Sell);
+exports.getSell = factory.getOne(Sell,'clint');
 
 // @desc    Create Sell
 // @route   POST  /api/v1/Sells
