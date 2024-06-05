@@ -30,3 +30,8 @@ exports.updateBuy = factory.updateOne(Buy);
 // @access  Private
 exports.deleteBuy = factory.deleteOne(Buy);
 
+
+exports.printExcel = factory.exportToExcel(Buy,'Supplayr');
+
+
+

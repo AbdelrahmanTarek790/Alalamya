@@ -47,15 +47,15 @@ const SellSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-SellSchema.pre(/^find/, function (next){
-  this.populate({path: 'user' , select: 'name -_id'})
 
-  .populate({path: 'prodcut' , select: 'name avg_price wight -_id'})
-  
-  .populate({path: 'clint' , select: 'clint_name money_pay money_on -_id'});
+SellSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name -_id' })
+    .populate({ path: 'product', select: 'name avg_price weight -_id' })
+    .populate({ path: 'clint', select: 'clint_name money_pay money_on -_id' });
 
   next();
-})  
+});
+
 SellSchema.statics.updateProductWeightS = async function(productId, weightSold) {
   await Product.findByIdAndUpdate(productId, {
      $inc:{wieght: -weightSold},

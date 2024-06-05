@@ -12,6 +12,7 @@ const {
   createSell,
   updateSell,
   deleteSell,
+  printExcel_Sell,
   
 } = require('../services/SellService');
 const authService = require('../services/authService');
@@ -39,6 +40,14 @@ router
     authService.allowedTo('admin'),
     deleteSellValidator,
     deleteSell
+  );
+
+  router
+  .route('/export/excel')
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager'),
+    printExcel_Sell
   );
 
 module.exports = router;

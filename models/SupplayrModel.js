@@ -34,6 +34,6 @@ const supplayrSchema = new mongoose.Schema(
 );
 
 
-const Supplayr = mongoose.model('supplayr', supplayrSchema);
+const Supplayr = mongoose.model('Supplayr', supplayrSchema);
 
 module.exports = Supplayr ;

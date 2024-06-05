@@ -8,7 +8,7 @@ const Sell = require('../models/sellModel');
 // @desc    Get list of Sell
 // @route   GET /api/v1/Sells
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Sell');
+exports.getSells = factory.getAll(Sell,'Product');
 
 // @desc    Get specific Sell by id
 // @route   GET /api/v1/Sells/:id
@@ -28,3 +28,5 @@ exports.updateSell = factory.updateOne(Sell);
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private
 exports.deleteSell = factory.deleteOne(Sell);
+
+exports.printExcel_Sell = factory.exportToExcel(Sell,'clint');

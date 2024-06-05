@@ -49,12 +49,14 @@ const BuySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-BuySchema.pre(/^find/, function (next){
-  this.populate({path: 'user' , select: 'name -_id'})
-  .populate({path: 'product' , select: 'name avg_price wight -_id'})
-  .populate({path: 'supplayr' , select: 'supplayr_name  -_id'});
+BuySchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name -_id' })
+    .populate({ path: 'product', select: 'name avg_price weight -_id' })
+    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on -_id' });
+
   next();
-})  
+});
+
 BuySchema.statics.calcAveragePrice = async function (
   productId
 ) {
