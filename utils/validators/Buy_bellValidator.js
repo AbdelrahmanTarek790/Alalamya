@@ -2,53 +2,33 @@
 const { check, body } = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
-exports.createBuyValidator = [
+exports.createBuy_bellValidator = [
   check('supplayr')
   .isMongoId()
   .withMessage('Invalid user id format'),
-
-    
-  check('E_wieght')
-    .notEmpty()
-    .withMessage('wieght is required'),
-    check('price_Kilo')
-    .notEmpty()
-    .withMessage('price is required'),
-    
-    check('price_all')
-    .notEmpty()
-    .withMessage('price is required'),
-    
-    check('pay')
+  
+    check('pay_bell')
     .notEmpty()
     .withMessage('price is required'),
 
-    check('size')
-    .notEmpty()
-    .withMessage('price is required'),
-    
    check('user')
    .isMongoId()
    .withMessage('Invalid user id format'),
-
-   check('product')
-    .isMongoId()
-    .withMessage('Invalid product id format'),
   
   validatorMiddleware,
 ];
 
-exports.getBuyValidator = [
+exports.getBuy_bellValidator = [
   check('id').isMongoId().withMessage('Invalid ID formate'),
   validatorMiddleware,
 ];
 
-exports.updateBuyValidator = [
+exports.updateBuy_bellValidator = [
   check('id').isMongoId().withMessage('Invalid ID formate'),
   validatorMiddleware,
 ];
 
-exports.deleteBuyValidator = [
+exports.deleteBuy_bellValidator = [
   check('id').isMongoId().withMessage('Invalid ID formate'),
   validatorMiddleware,
 ];
