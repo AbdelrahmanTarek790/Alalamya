@@ -45,7 +45,7 @@ router
   .route('/export/excel')
   .get(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin', 'manager','user2'),
     printExcel
   );
 

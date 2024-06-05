@@ -15,10 +15,6 @@ const {
   updateUser,
   deleteUser,
   
-  getLoggedUserData,
-  updateLoggedUserPassword,
-  updateLoggedUserData,
-  deleteLoggedUserData,
 } = require('../services/userService');
 
 const authService = require('../services/authService');
