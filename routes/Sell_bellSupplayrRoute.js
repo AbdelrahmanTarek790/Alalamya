@@ -28,7 +28,7 @@ router
   .put(
     authService.protect,
     authService.allowedTo('admin', 'manager'),
-    updateSell_bellSupplayr
+    updateSell_bellSupplayr,
   )
   .delete(
     authService.protect,

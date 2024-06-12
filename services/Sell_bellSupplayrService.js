@@ -1,6 +1,6 @@
 
 const factory = require('./handlersFactory');
-const Sell_bellSupplayr_bellSupplayr = require('../models/Sell_bellSupplayrModel');
+const Sell_bellSupplayr = require('../models/Sell_bellSupplayrModel');
 
 
 
@@ -23,7 +23,7 @@ exports.createSell_bellSupplayr = factory.createOne(Sell_bellSupplayr);
 // @desc    Update specific Sell_bellSupplayr_bell
 // @route   PUT /api/v1/Sell_bellSupplayrs/:id
 // @access  Private
-exports.updateSell_bellSupplay = factory.updateOne(Sell_bellSupplayr);
+exports.updateSell_bellSupplayr = factory.updateOne(Sell_bellSupplayr);
 
 // @desc    Delete specific Sell_bellSupplayr_bell
 // @route   DELETE /api/v1/Sell_bellSupplayrs/:id

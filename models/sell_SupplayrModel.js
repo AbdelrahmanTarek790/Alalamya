@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const User = require('./userModel');
 const Product = require('./ProductModel');
-const Supplayr = require('./SupplayModel');
 const Warehouse = require('./WarehouseModel');
 const Supplayr = require('./SupplayrModel');
 

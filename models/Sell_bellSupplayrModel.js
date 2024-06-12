@@ -64,6 +64,6 @@ const Sell_bellSupplayrSchema = new mongoose.Schema(
     
    });
 
-  const Sell_bellSupplayr = mongoose.model('Sell_bellSupplayr', Sell_bellcSchema);
+  const Sell_bellSupplayr = mongoose.model('Sell_bellSupplayr', Sell_bellSupplayrSchema);
 
 module.exports = Sell_bellSupplayr ;

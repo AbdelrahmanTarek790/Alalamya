@@ -3,7 +3,9 @@ const asyncHandler = require('express-async-handler');
 const ApiFeatures = require('../utils/apiFeatures');
 const XLSX = require('xlsx');
 const factory = require('./handlersFactory');
-const Sell_supplayr = require('../models/Sell_supplayr_SupplayrModel');
+const Sell_supplayr = require('../models/sell_SupplayrModel');
+
+
 
 
 
@@ -57,15 +59,15 @@ exports.printExcel_Sell_supplayr =  (Sell_supplayr, modelName = 'Supplayr') => a
       return {
         'اسم المستخدم': doc.user ? doc.user.name : '',
         'اسم المنتج': doc.product ? doc.product.name : '',
-        'اسم المورد': doc.supplayar ? doc.supplayar.supplayar_name : '',
+        'اسم المورد': doc.supplayr ? doc.supplayr.supplayr_name : '',
         'تم دفع':doc.pay_now,
         'سعر الاجمالي ':doc.price_allQuantity,
         'كود':doc.product_code,
         'مقاس': doc.size_o,
         'وزن الخروج': doc.o_wieght,
-        'المبلغ اجمالي المدفوع': doc.supplayar ? doc.supplayar.pricePay_sell : '',
-        'المبلغ الكلي': doc.supplayar ? doc.supplayar.totalPrice_sell : '',
-        'المبلغ المستحق': doc.supplayar ? doc.supplayar.priceOn_sell : '',
+        'المبلغ اجمالي المدفوع': doc.supplayr ? doc.supplayr.pricePay_sell : '',
+        'المبلغ الكلي': doc.supplayr ? doc.supplayr.totalPrice_sell : '',
+        'المبلغ المستحق': doc.supplayr ? doc.supplayr.priceOn_sell : '',
         'تاريخ الإنشاء': doc.createdAt,
         'تاريخ التحديث': doc.updatedAt,
       };
