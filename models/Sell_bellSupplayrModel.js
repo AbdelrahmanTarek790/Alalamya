@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 const User = require('./userModel');
-const Clint =require('./ClintModel');
+const Supplayr =require('./SupplayrModel');
 
-const Sell_bellSchema = new mongoose.Schema(
+const Sell_bellSupplayrSchema = new mongoose.Schema(
     {
       user: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
       },
-      clint: {
+      supplayr: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Clint',
+        ref: 'Supplayr',
       },
       payBell:{
         type: Number,
@@ -38,32 +38,32 @@ const Sell_bellSchema = new mongoose.Schema(
     { timestamps: true }
   );
   
-  Sell_bellSchema.pre(/^find/, function (next) {
+  Sell_bellSupplayrSchema.pre(/^find/, function (next) {
     this.populate({ path: 'user', select: 'name -_id' })
-      .populate({ path: 'clint', select: 'clint_name money_pay money_on total_monye -_id' });
+      .populate({ path: 'supplayr', select: 'supplayr_name money_pay money_on total_monye -_id' });
   
     next();
   });
 
 
-  Sell_bellSchema.statics.takeMoney_d = async function(supplayrId,priceall) {
-    await Clint.findByIdAndUpdate(clintId, {
+  Sell_bellSupplayrSchema.statics.takeMoney_d = async function(supplayrId,priceall) {
+    await Supplayr.findByIdAndUpdate(supplayrId, {
        $inc:{money_pay: +priceall},
     });
   };
   
-  Sell_bellSchema.statics.takeMoney_b = async function(clintId,pricePay) {
-    await Clint.findByIdAndUpdate(clintId, {
+  Sell_bellSupplayrSchema.statics.takeMoney_b = async function(supplayrId,pricePay) {
+    await Supplayr.findByIdAndUpdate(supplayrId, {
        $inc:{money_on: -pricePay},
     });
   };
 
-  Sell_bellSchema.post('save', async function () {
+  Sell_bellSupplayrSchema.post('save', async function () {
      await this.constructor.takeMoney_d(this.clint,this.payBell);
      await this.constructor.takeMoney_b(this.clint,this.payBell);
     
    });
 
-  const Sell_bell = mongoose.model('Sell_bell', Sell_bellSchema);
+  const Sell_bellSupplayr = mongoose.model('Sell_bellSupplayr', Sell_bellcSchema);
 
-module.exports = Sell_bell ;
+module.exports = Sell_bellSupplayr ;

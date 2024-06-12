@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const User = require('./userModel');
 const Product = require('./ProductModel');
-const Supplayr =require('./SupplayrModel');
-
+const Supplayr = require('./SupplayrModel');
+const Warehouse = require('./WarehouseModel');
 
 const BuySchema = new mongoose.Schema(
   {
@@ -18,7 +18,6 @@ const BuySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    
     E_wieght: {
       type: Number,
       required: true,
@@ -27,7 +26,7 @@ const BuySchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Product',
     },
-    product_code:{
+    product_code: {
       type: Number,
       required: true,
     },
@@ -39,23 +38,28 @@ const BuySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    pay:{
+    pay: {
       type: Number,
       required: true,
-      default:0,
+      default: 0,
     },
-    
   },
   { timestamps: true }
 );
 
 BuySchema.pre(/^find/, function (next) {
   this.populate({ path: 'user', select: 'name -_id' })
-    .populate({ path: 'product', select: 'name avg_price weight -_id' })
+    .populate({ path: 'product', select: 'type avg_price weight -_id' })
     .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on -_id' });
 
   next();
 });
+
+BuySchema.statics.addToWarehouse = async function (product, product_code, name, weight, size) {
+  await Warehouse.create({ product, product_code, name, weight, size });
+};
+
+
 
 BuySchema.statics.calcAveragePrice = async function (
   productId
@@ -139,12 +143,28 @@ BuySchema.statics.takeMoney_b = async function(supplayrId,pricePay) {
   });
 };
 
+BuySchema.statics.allcalc_d = async function(supplayrId,price_all) {
+  await Supplayr.findByIdAndUpdate(supplayrId, {
+     $inc:{moneyOn_me: +price_all},
+  });
+};
+
+BuySchema.statics.allcalc_b = async function(supplayrId,price_Pay) {
+  await Supplayr.findByIdAndUpdate(supplayrId, {
+     $inc:{moneyOn_me: -price_Pay},
+  });
+};
+
 BuySchema.post('save', async function () {
+  const product = await Product.findById(this.product);
+  await this.constructor.addToWarehouse(this.product, this.product_code, product.type, product.weight, this.size);
  await this.constructor.calcAveragePrice(this.product)
   await this.constructor.updateProductWeight(this.product,this.E_wieght);
   await this.constructor.AddmoneyAndtakeMoney_b(this.supplayr);
   await this.constructor.takeMoney_d(this.supplayr,this.price_all);
   await this.constructor.takeMoney_b(this.supplayr,this.pay);
+  await this.constructor.allcalc_d(this.supplayr,this.price_all);
+  await this.constructor.allcalc_b(this.supplayr,this.pay);
  
 });
 

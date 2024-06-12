@@ -1,46 +1,45 @@
 
 const asyncHandler = require('express-async-handler');
-const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
 const XLSX = require('xlsx');
 const factory = require('./handlersFactory');
-const Sell = require('../models/sellModel');
+const Sell_supplayr = require('../models/Sell_supplayr_SupplayrModel');
 
 
 
 
-// @desc    Get list of Sell
-// @route   GET /api/v1/Sells
+// @desc    Get list of Sell_supplayr
+// @route   GET /api/v1/Sell_supplayrs
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Product');
+exports.getSell_supplayrs = factory.getAll(Sell_supplayr,'Product');
 
-// @desc    Get specific Sell by id
-// @route   GET /api/v1/Sells/:id
+// @desc    Get specific Sell_supplayr by id
+// @route   GET /api/v1/Sell_supplayrs/:id
 // @access  Public
-exports.getSell = factory.getOne(Sell,'clint');
+exports.getSell_supplayr = factory.getOne(Sell_supplayr,'Supplayr');
 
-// @desc    Create Sell
-// @route   POST  /api/v1/Sells
+// @desc    Create Sell_supplayr
+// @route   POST  /api/v1/Sell_supplayrs
 // @access  Private
-exports.createSell = factory.createOne(Sell);
-// @desc    Update specific Sell
-// @route   PUT /api/v1/Sells/:id
+exports.createSell_supplayr = factory.createOne(Sell_supplayr);
+// @desc    Update specific Sell_supplayr
+// @route   PUT /api/v1/Sell_supplayrs/:id
 // @access  Private
-exports.updateSell = factory.updateOne(Sell);
+exports.updateSell_supplayr = factory.updateOne(Sell_supplayr);
 
-// @desc    Delete specific Sell
-// @route   DELETE /api/v1/Sells/:id
+// @desc    Delete specific Sell_supplayr
+// @route   DELETE /api/v1/Sell_supplayrs/:id
 // @access  Private
-exports.deleteSell = factory.deleteOne(Sell);
+exports.deleteSell_supplayr = factory.deleteOne(Sell_supplayr);
 
-exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (req, res) => {
+exports.printExcel_Sell_supplayr =  (Sell_supplayr, modelName = 'Supplayr') => asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
     // Build query
-    const documentsCounts = await Sell.countDocuments();
-    const apiFeatures = new ApiFeatures(Sell.find(filter).populate('user').populate('product').populate('clint'), req.query)
+    const documentsCounts = await Sell_supplayr.countDocuments();
+    const apiFeatures = new ApiFeatures(Sell_supplayr.find(filter).populate('user').populate('product').populate('supplayr'), req.query)
       .paginate(documentsCounts)
       .filter()
       .search(modelName)
@@ -58,15 +57,15 @@ exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (re
       return {
         'اسم المستخدم': doc.user ? doc.user.name : '',
         'اسم المنتج': doc.product ? doc.product.name : '',
-        'اسم العميل': doc.clint ? doc.clint.clint_name : '',
+        'اسم المورد': doc.supplayar ? doc.supplayar.supplayar_name : '',
         'تم دفع':doc.pay_now,
         'سعر الاجمالي ':doc.price_allQuantity,
         'كود':doc.product_code,
         'مقاس': doc.size_o,
         'وزن الخروج': doc.o_wieght,
-        'المبلغ اجمالي المدفوع': doc.clint ? doc.clint.money_pay : '',
-        'المبلغ الكلي': doc.clint ? doc.clint.total_monye : '',
-        'المبلغ المستحق': doc.clint ? doc.clint.money_on : '',
+        'المبلغ اجمالي المدفوع': doc.supplayar ? doc.supplayar.pricePay_sell : '',
+        'المبلغ الكلي': doc.supplayar ? doc.supplayar.totalPrice_sell : '',
+        'المبلغ المستحق': doc.supplayar ? doc.supplayar.priceOn_sell : '',
         'تاريخ الإنشاء': doc.createdAt,
         'تاريخ التحديث': doc.updatedAt,
       };

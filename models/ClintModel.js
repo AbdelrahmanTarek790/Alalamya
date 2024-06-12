@@ -25,6 +25,11 @@ const clintSchema = new mongoose.Schema(
       required: true,
       default:0,
     },
+    disCount: {
+      type: Number,
+      required: true,
+      default:0,
+    },
     
 
   },

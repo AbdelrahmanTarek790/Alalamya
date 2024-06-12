@@ -7,17 +7,28 @@ const ClintRoute = require('./ClintRoute');
 const SupplayrRoute = require('./SupplayrRoute');
 const Buy_bell = require('./Buy_bellRoute');
 const Sell_bell = require('./Sell_bellRoute');
+const Warehouse = require('./WarehouseRoute');
+const Clint_Tax = require('./Clint_TaxRoute');
+const Supplayr_Tax = require('./Supplayr_TaxRoute');
+const Sell_Supplayr = require('./Sell_SupplayrRoute');
+const Sell_bellSupplayr = require('./Sell_bellSupplayrRoute');
+
 
 const mountRoutes = (app) => {
   
   app.use('/api/v1/users', userRoute);
   app.use('/api/v1/auth', authRoute);
   app.use('/api/v1/products', ProductRoute);
-  app.use('/api/v1/Buys', BuyRoute);
+  app.use('/api/v1/buys', BuyRoute);
   app.use('/api/v1/sells', SellRoute);
   app.use('/api/v1/supplayrs', SupplayrRoute);
   app.use('/api/v1/clints', ClintRoute);
   app.use('/api/v1/buy_bell', Buy_bell);
-  app.use('/api/v1/Sell_bell', Sell_bell);
+  app.use('/api/v1/sell_bell', Sell_bell);
+  app.use('/api/v1/warehous', Warehouse);
+  app.use('/api/v1/clint_Tax', Clint_Tax);
+  app.use('/api/v1/supplayr_Tax', Supplayr_Tax);
+  app.use('/api/v1/sell_supplayr', Sell_Supplayr);
+  app.use('/api/v1/sell_bellsupplayr', Sell_bellSupplayr);
 }
 module.exports = mountRoutes;

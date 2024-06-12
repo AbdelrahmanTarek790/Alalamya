@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
+const XLSX = require('xlsx');
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
@@ -80,44 +81,43 @@ exports.getAll = (Model, modelName = '') =>
       .json({ results: documents.length, paginationResult, data: documents });
   });
 
-  exports.exportToExcel = (Model, modelName = '') => asyncHandler(async (req, res) => {
-    let filter = {};
-    if (req.filterObj) {
-      filter = req.filterObj;
-    }
-    // Build query
-    const documentsCounts = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(filter).populate('user').populate('product').populate('supplayr'), req.query)
-      .paginate(documentsCounts)
-      .filter()
-      .search(modelName)
-      .limitFields()
-      .sort();
-  
-    // Execute query
-    const { mongooseQuery } = apiFeatures;
-    const documents = await mongooseQuery;
-  
-    // Convert to Excel
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = documents.map(doc => {
-      const docObj = doc.toObject();
-      return {
-        ...docObj,
-        user: doc.user ? doc.user.name : '',
-        product: doc.product ? doc.product.name : '',
-        supplayr: doc.supplayr ? doc.supplayr.supplayr_name : '',
-      };
-    });
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-  
-    // Set response headers
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
-  
-    // Send Excel file
-    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    res.send(excelBuffer);
+exports.exportToExcel = (Model, modelName = '') => asyncHandler(async (req, res) => {
+  let filter = {};
+  if (req.filterObj) {
+    filter = req.filterObj;
+  }
+  // Build query
+  const documentsCounts = await Model.countDocuments();
+  const apiFeatures = new ApiFeatures(Model.find(filter).populate('user').populate('product').populate('supplayr'), req.query)
+    .paginate(documentsCounts)
+    .filter()
+    .search(modelName)
+    .limitFields()
+    .sort();
+
+  // Execute query
+  const { mongooseQuery } = apiFeatures;
+  const documents = await mongooseQuery;
+
+  // Convert to Excel
+  const workbook = XLSX.utils.book_new();
+  const worksheetData = documents.map(doc => {
+    const docObj = doc.toObject();
+    return {
+      ...docObj,
+      user: doc.user ? doc.user.name : '',
+      product: doc.product ? doc.product.name : '',
+      supplayr: doc.supplayr ? doc.supplayr.supplayr_name : '',
+    };
   });
-  
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+  // Set response headers
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+
+  // Send Excel file
+  const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  res.send(excelBuffer);
+});

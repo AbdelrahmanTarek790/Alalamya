@@ -28,7 +28,39 @@ const supplayrSchema = new mongoose.Schema(
       default:0,
     },
     
+    priceOn_sell: {
+      type: Number,
+      required: true,
+      default:0,
+    },
 
+    pricePay_sell: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    
+    totalPrice_sell: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    moneyOn_me: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    
+    moneyFor_me: {
+      type: Number,
+      required: true,
+      default:0,
+    },
+    dis_count: {
+      type: Number,
+      required: true,
+      default:0,
+    },
   },
   { timestamps: true }
 );

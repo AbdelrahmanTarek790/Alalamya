@@ -1,54 +1,80 @@
 const mongoose = require('mongoose');
 const User = require('./userModel');
-const Buy = require('./BuyModel');
-const Supplayr =require('./SupplayrModel');
+const Supplayr = require('./SupplayrModel');
 
 const Buy_bellSchema = new mongoose.Schema(
-    {
-      user: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-      },
-      supplayr: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Supplayr',
-      },
-      pay_bell:{
-        type: Number,
-        required: true,
-        default:0,
-      },
-      
+  {
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
     },
-    { timestamps: true }
-  );
-  
-  Buy_bellSchema.pre(/^find/, function (next) {
-    this.populate({ path: 'user', select: 'name -_id' })
-      .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price -_id' });
-  
-    next();
+    supplayr_name: {
+      type: String,
+      required: true,
+    },
+    pay_bell: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    payment_method: {
+      type: String,
+      enum: ['cash', 'check'],
+      required: true,
+    },
+    check_number: {
+      type: String,
+      required: function () {
+        return this.payment_method === 'check';
+      },
+    },
+    check_date: {
+      type: Date,
+      required: function () {
+        return this.payment_method === 'check';
+      },
+    },
+  },
+  { timestamps: true }
+);
+
+Buy_bellSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name -_id' })
+    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price -_id' });
+
+  next();
+});
+
+Buy_bellSchema.statics.takeMoney_d = async function(supplayrId, amount) {
+  await Supplayr.findByIdAndUpdate(supplayrId, {
+    $inc: { price_pay: +amount },
   });
+};
 
+Buy_bellSchema.statics.takeMoney_b = async function(supplayrId, amount) {
+  await Supplayr.findByIdAndUpdate(supplayrId, {
+    $inc: { price_on: -amount },
+  });
+};
 
-  Buy_bellSchema.statics.takeMoney_d = async function(supplayrId,priceall) {
-    await Supplayr.findByIdAndUpdate(supplayrId, {
-       $inc:{price_pay: +priceall},
-    });
-  };
-  
-  Buy_bellSchema.statics.takeMoney_b = async function(supplayrId,pricePay) {
-    await Supplayr.findByIdAndUpdate(supplayrId, {
-       $inc:{price_on: -pricePay},
-    });
-  };
+Buy_bellSchema.pre('save', async function(next) {
+  const supplayr = await Supplayr.findOne({ supplayr_name: this.supplayr_name });
 
-  Buy_bellSchema.post('save', async function () {
-     await this.constructor.takeMoney_d(this.supplayr,this.pay_bell);
-     await this.constructor.takeMoney_b(this.supplayr,this.pay_bell);
-    
-   });
+  if (!supplayr) {
+    const err = new Error(`Supplier with name ${this.supplayr_name} not found`);
+    return next(err);
+  }
 
-  const Buy_bell = mongoose.model('Buy_bell', Buy_bellSchema);
+  this.supplayr = supplayr._id;
+  next();
+});
 
-module.exports = Buy_bell ;
+Buy_bellSchema.post('save', async function () {
+  const amount = this.pay_bell;
+  await this.constructor.takeMoney_d(this.supplayr, amount);
+  await this.constructor.takeMoney_b(this.supplayr, amount);
+});
+
+const Buy_bell = mongoose.model('Buy_bell', Buy_bellSchema);
+
+module.exports = Buy_bell;

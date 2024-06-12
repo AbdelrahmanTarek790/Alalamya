@@ -1,46 +1,47 @@
 
 const asyncHandler = require('express-async-handler');
-const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
 const XLSX = require('xlsx');
 const factory = require('./handlersFactory');
-const Sell = require('../models/sellModel');
+const Warehouse = require('../models/WarehouseModel');
 
 
 
 
-// @desc    Get list of Sell
-// @route   GET /api/v1/Sells
+
+// @desc    Get list of Warehouse
+// @route   GET /api/v1/Warehouses
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Product');
+exports.getWarehouses = factory.getAll(Warehouse,'Warehouse');
 
-// @desc    Get specific Sell by id
-// @route   GET /api/v1/Sells/:id
+// @desc    Get specific Warehouse by id
+// @route   GET /api/v1/Warehouses/:id
 // @access  Public
-exports.getSell = factory.getOne(Sell,'clint');
+exports.getWarehouse = factory.getOne(Warehouse);
 
-// @desc    Create Sell
-// @route   POST  /api/v1/Sells
+// @desc    Create Warehouse
+// @route   POST  /api/v1/Warehouses
 // @access  Private
-exports.createSell = factory.createOne(Sell);
-// @desc    Update specific Sell
-// @route   PUT /api/v1/Sells/:id
+exports.createWarehouse = factory.createOne(Warehouse);
+// @desc    Update specific Warehouse
+// @route   PUT /api/v1/Warehouses/:id
 // @access  Private
-exports.updateSell = factory.updateOne(Sell);
+exports.updateWarehouse = factory.updateOne(Warehouse);
 
-// @desc    Delete specific Sell
-// @route   DELETE /api/v1/Sells/:id
+// @desc    Delete specific Warehouse
+// @route   DELETE /api/v1/Warehouses/:id
 // @access  Private
-exports.deleteSell = factory.deleteOne(Sell);
+exports.deleteWarehouse = factory.deleteOne(Warehouse);
 
-exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (req, res) => {
+
+exports.printExcel = (Warehouse, modelName = 'Supplayr') => asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
     // Build query
-    const documentsCounts = await Sell.countDocuments();
-    const apiFeatures = new ApiFeatures(Sell.find(filter).populate('user').populate('product').populate('clint'), req.query)
+    const documentsCounts = await Warehouse.countDocuments();
+    const apiFeatures = new ApiFeatures(Warehouse.find(filter).populate('user').populate('product').populate('supplayr'), req.query)
       .paginate(documentsCounts)
       .filter()
       .search(modelName)
@@ -58,15 +59,10 @@ exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (re
       return {
         'اسم المستخدم': doc.user ? doc.user.name : '',
         'اسم المنتج': doc.product ? doc.product.name : '',
-        'اسم العميل': doc.clint ? doc.clint.clint_name : '',
-        'تم دفع':doc.pay_now,
-        'سعر الاجمالي ':doc.price_allQuantity,
         'كود':doc.product_code,
-        'مقاس': doc.size_o,
-        'وزن الخروج': doc.o_wieght,
-        'المبلغ اجمالي المدفوع': doc.clint ? doc.clint.money_pay : '',
-        'المبلغ الكلي': doc.clint ? doc.clint.total_monye : '',
-        'المبلغ المستحق': doc.clint ? doc.clint.money_on : '',
+        'مقاس': doc.size,
+        'وزن المنتج': doc.product ? doc.product.weight : '',
+        'السعر المتوسط': doc.product ? doc.product.avg_price : '',
         'تاريخ الإنشاء': doc.createdAt,
         'تاريخ التحديث': doc.updatedAt,
       };
@@ -82,7 +78,6 @@ exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (re
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
     res.send(excelBuffer);
   });
-
 
 
 
