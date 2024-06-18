@@ -29,7 +29,7 @@ const Sell_bellSchema = new mongoose.Schema(
         },
       },
       checkDate: {
-        type: Date,
+        type: String,
         required: function () {
           return this.payment_method === 'check';
         },

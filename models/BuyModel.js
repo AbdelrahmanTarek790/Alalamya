@@ -158,14 +158,13 @@ BuySchema.statics.allcalc_b = async function(supplayrId,price_Pay) {
 BuySchema.post('save', async function () {
   const product = await Product.findById(this.product);
   await this.constructor.addToWarehouse(this.product, this.product_code, product.type, product.weight, this.size);
- await this.constructor.calcAveragePrice(this.product)
-  await this.constructor.updateProductWeight(this.product,this.E_wieght);
-  await this.constructor.AddmoneyAndtakeMoney_b(this.supplayr);
-  await this.constructor.takeMoney_d(this.supplayr,this.price_all);
+  await this.constructor.calcAveragePrice(this.product)
+  await this.constructor.updateProductWeight(this.product,this.E_wieght);await this.constructor.takeMoney_d(this.supplayr,this.price_all);
   await this.constructor.takeMoney_b(this.supplayr,this.pay);
   await this.constructor.allcalc_d(this.supplayr,this.price_all);
   await this.constructor.allcalc_b(this.supplayr,this.pay);
- 
+  await this.constructor.AddmoneyAndtakeMoney_b(this.supplayr);
+  
 });
 
 const Buy = mongoose.model('Buy', BuySchema);

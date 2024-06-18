@@ -13,6 +13,7 @@ const Supplayr_Tax = require('./Supplayr_TaxRoute');
 const Sell_Supplayr = require('./Sell_SupplayrRoute');
 const Sell_bellSupplayr = require('./Sell_bellSupplayrRoute');
 const Return = require('./ReturnRoute');
+const Return_Check = require('./ReturnCheckRoute');
 
 
 const mountRoutes = (app) => {
@@ -32,5 +33,8 @@ const mountRoutes = (app) => {
   app.use('/api/v1/sell_supplayr', Sell_Supplayr);
   app.use('/api/v1/sell_bellsupplayr', Sell_bellSupplayr);
   app.use('/api/v1/return',Return);
+  app.use('/api/v1/return_check',Return_Check);
+
+
 }
 module.exports = mountRoutes;

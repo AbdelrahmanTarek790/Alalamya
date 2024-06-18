@@ -3,9 +3,9 @@ const { check, body } = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 exports.createBuy_bellValidator = [
-  check('supplayr')
-  .isMongoId()
-  .withMessage('Invalid user id format'),
+  check('supplayr_name')
+  .notEmpty()
+    .withMessage('supplayr name is required'),
   
     check('pay_bell')
     .notEmpty()

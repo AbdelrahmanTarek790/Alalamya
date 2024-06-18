@@ -30,15 +30,15 @@ const tax_supplayrSchema = new mongoose.Schema(
     },
     netAmount: {
       type: Number,
-      required: true,
+      
     },
     taxAmount: {
       type: Number,
-      required: true,
+      
     },
     discountAmount: {
       type: Number,
-      required: true,
+      
     },
   },
   { timestamps: true }

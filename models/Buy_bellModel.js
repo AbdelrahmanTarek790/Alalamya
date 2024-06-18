@@ -29,7 +29,7 @@ const Buy_bellSchema = new mongoose.Schema(
       },
     },
     check_date: {
-      type: Date,
+      type: String,
       required: function () {
         return this.payment_method === 'check';
       },
@@ -53,7 +53,8 @@ Buy_bellSchema.statics.takeMoney_d = async function(supplayrId, amount) {
 
 Buy_bellSchema.statics.takeMoney_b = async function(supplayrId, amount) {
   await Supplayr.findByIdAndUpdate(supplayrId, {
-    $inc: { price_on: -amount },
+    $inc: { price_on: -amount , moneyOn_me: -amount },
+
   });
 };
 
