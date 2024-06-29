@@ -41,6 +41,7 @@ const SellSchema = new mongoose.Schema(
     pay_now: {
       type: Number,
       required: true,
+      default :0,
     },
   },
   { timestamps: true }

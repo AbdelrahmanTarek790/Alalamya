@@ -5,12 +5,16 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 exports.createSell_bellValidator = [
   check('clint')
     .notEmpty()
-    .withMessage('price is required'),
+    .withMessage('clint name is required'),
 
   
     check('payBell')
     .notEmpty()
     .withMessage('price is required'),
+
+    check('paymentMethod')
+    .notEmpty()
+    .withMessage(' payment Method is required'),
 
    check('user')
    .isMongoId()

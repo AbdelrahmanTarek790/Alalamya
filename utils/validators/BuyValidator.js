@@ -11,27 +11,32 @@ exports.createBuyValidator = [
   check('E_wieght')
     .notEmpty()
     .withMessage('wieght is required'),
-    check('price_Kilo')
+    
+  check('price_Kilo')
     .notEmpty()
     .withMessage('price is required'),
     
-    check('price_all')
+  check('price_all')
     .notEmpty()
     .withMessage('price is required'),
     
-    check('pay')
+  check('pay')
     .notEmpty()
     .withMessage('price is required'),
 
-    check('size')
+  check('size')
+    .notEmpty()
+    .withMessage('price is required'),
+   
+  check('product_code')
     .notEmpty()
     .withMessage('price is required'),
     
-   check('user')
+  check('user')
    .isMongoId()
    .withMessage('Invalid user id format'),
 
-   check('product')
+  check('product')
     .isMongoId()
     .withMessage('Invalid product id format'),
   

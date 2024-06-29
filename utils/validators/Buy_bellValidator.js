@@ -4,14 +4,18 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 exports.createBuy_bellValidator = [
   check('supplayr_name')
-  .notEmpty()
+    .notEmpty()
     .withMessage('supplayr name is required'),
   
-    check('pay_bell')
+  check('pay_bell')
     .notEmpty()
     .withMessage('price is required'),
-
-   check('user')
+   
+  check('payment_method')
+    .notEmpty()
+    .withMessage('price is required'),
+  
+  check('user')
    .isMongoId()
    .withMessage('Invalid user id format'),
   

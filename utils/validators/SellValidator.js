@@ -4,11 +4,11 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 exports.createSellValidator = [
 
-  check('clint')
-  .isMongoId()
-  .withMessage('Invalid user id format'),
+    check('clint')
+      .isMongoId()
+      .withMessage('Invalid user id format'),
 
-  check('o_wieght')
+    check('o_wieght')
     .notEmpty()
     .withMessage('wieght is required'),
 
@@ -20,23 +20,19 @@ exports.createSellValidator = [
     .notEmpty()
     .withMessage('price is required'),
     
-    check('pay_now')
-    .notEmpty()
-    .withMessage('price is required'),
-   
     check('product_code')
     .notEmpty()
     .withMessage('price is required'),
     
-  check('user')
+    check('user')
    .isMongoId()
    .withMessage('Invalid user id format'),
 
-  check('product')
+    check('product')
     .isMongoId()
     .withMessage('Invalid product id format'),
   
-  validatorMiddleware,
+   validatorMiddleware,
 ];
 
 exports.getSellValidator = [
