@@ -56,29 +56,25 @@ SellSchema.pre(/^find/, function (next) {
 
 SellSchema.statics.updateProductWeightS = async function (productId, weightSold) {
   await Product.findByIdAndUpdate(productId, {
-    $inc: { wieght: -weightSold },
+    $inc: { weight: -weightSold },
   });
 };
 
-SellSchema.statics.removeFromWarehouse = async function (product_code, weightSold) {
+SellSchema.statics.removeFromWarehouse = async function (product_code) {
   const product = await Warehouse.findOne({ product_code });
   if (!product) throw new Error('Product not found in warehouse');
-  if (product.weight < weightSold) throw new Error('Not enough quantity in warehouse');
-  product.weight -= weightSold;
-  if (product.weight === 0) {
-    await Warehouse.deleteOne({ product_code });
-  } else {
-    await product.save();
-  }
+
+  // إزالة المنتج بالكامل من المخزون
+  await Warehouse.deleteOne({ product_code });
 };
 
 SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
   const result2 = await this.aggregate([
-    // Stage 1 : get all Sells in specific clint
+    // مرحلة 1: الحصول على جميع عمليات البيع لعميل معين
     {
       $match: { clint: clintId },
     },
-    // Stage 2: Grouping Sells based on clintId and calc Prices, weight
+    // مرحلة 2: تجميع عمليات البيع بناءً على clintId وحساب الأسعار، الوزن
     {
       $group: {
         _id: '$clint',
@@ -111,7 +107,7 @@ SellSchema.statics.takeMoney_bs = async function (clintId, monyePay) {
 
 SellSchema.post('save', async function () {
   await this.constructor.updateProductWeightS(this.product, this.o_wieght);
-  await this.constructor.removeFromWarehouse(this.product_code, this.o_wieght);
+  await this.constructor.removeFromWarehouse(this.product_code);
   await this.constructor.AddmoneyAndtakeMoneyS(this.clint);
   await this.constructor.takeMoney_ds(this.clint, this.price_allQuantity);
   await this.constructor.takeMoney_bs(this.clint, this.pay_now);

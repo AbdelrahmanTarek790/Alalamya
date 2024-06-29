@@ -8,19 +8,19 @@ exports.createSellValidator = [
   .isMongoId()
   .withMessage('Invalid user id format'),
 
-  check('E_wieght')
+  check('o_wieght')
     .notEmpty()
     .withMessage('wieght is required'),
 
-    check('price_Kilo')
+    check('priceForKilo')
     .notEmpty()
     .withMessage('price is required'),
     
-    check('price_allQuntity')
+    check('price_allQuantity')
     .notEmpty()
     .withMessage('price is required'),
     
-    check('pay')
+    check('pay_now')
     .notEmpty()
     .withMessage('price is required'),
    
@@ -32,7 +32,7 @@ exports.createSellValidator = [
    .isMongoId()
    .withMessage('Invalid user id format'),
 
-  check('Product')
+  check('product')
     .isMongoId()
     .withMessage('Invalid product id format'),
   
