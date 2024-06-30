@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon server.js",
-    "start": "NODE_ENV=production node server.js"
+    "build": "NODE_ENV=production node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cli": "^1.0.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
@@ -24,6 +25,7 @@
     "mongoose": "^6.0.13",
     "morgan": "^1.10.0",
     "slugify": "^1.6.3",
+    "vercel": "^34.2.8",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
