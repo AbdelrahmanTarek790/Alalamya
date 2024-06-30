@@ -115,6 +115,30 @@ exports.allowedTo = (...roles) =>
     next();
   });
 
+// @desc    Get user data based on token
+// @route   GET /api/v1/auth/me
+// @access  Private
 
+exports.getUserData = asyncHandler(async (req, res, next) => {
+  // Check if token exists in headers
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new ApiError('You are not logged in! Please log in to get access.', 401));
+  }
 
+  // Verify token
+  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+  // Get user from the token
+  const user = await User.findById(decoded.userId).select('-password');
+  if (!user) {
+    return next(new ApiError('The user belonging to this token does no longer exist.', 401));
+  }
+
+  // Respond with user data
+  res.status(200).json({ data: user });
+});
   
