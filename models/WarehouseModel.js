@@ -31,7 +31,7 @@ const warehouseSchema = new mongoose.Schema(
 
 warehouseSchema.pre(/^find/, function (next) {
 this.populate({ path: 'user', select: 'name -_id' })
-    .populate({ path: 'product', select: 'type avg_price weight -_id' })
+    .populate({ path: 'product', select: 'type avg_price wieght -_id' })
     next();
   });
 
