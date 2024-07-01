@@ -61,6 +61,7 @@ exports.printExcel = (Warehouse, modelName = 'Supplayr') => asyncHandler(async (
         'اسم المنتج': doc.product ? doc.product.name : '',
         'كود':doc.product_code,
         'مقاس': doc.size,
+        'وزن البكرة ':doc.weight,
         'وزن المنتج': doc.product ? doc.product.weight : '',
         'السعر المتوسط': doc.product ? doc.product.avg_price : '',
         'تاريخ الإنشاء': doc.createdAt,

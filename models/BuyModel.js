@@ -55,8 +55,8 @@ BuySchema.pre(/^find/, function (next) {
   next();
 });
 
-BuySchema.statics.addToWarehouse = async function (product, product_code, name, weight, size) {
-  await Warehouse.create({ product, product_code, name, weight, size });
+BuySchema.statics.addToWarehouse = async function (product, product_code, name, E_wieght, size) {
+  await Warehouse.create({ product, product_code, name, weight:E_wieght, size });
 };
 
 
