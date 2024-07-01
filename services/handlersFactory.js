@@ -66,7 +66,7 @@ exports.getAll = (Model, modelName = '') =>
     // Build query
     const documentsCounts = await Model.countDocuments();
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
-      .paginate(documentsCounts)
+      //.paginate(documentsCounts)
       .filter()
       .search(modelName)
       .limitFields()

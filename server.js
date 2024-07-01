@@ -22,10 +22,16 @@ dbConnection();
 // express app
 const app = express();
 
-// Enable other domains to access your application
-app.use(cors());
-app.options('*', cors());
+// CORS configuration to allow any origin
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
 
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 // compress all responses
 app.use(compression());
 
