@@ -14,10 +14,7 @@ const warehouseSchema = new mongoose.Schema(
       type: Number,
       unique: true,
     },
-    name: {
-      type: String,
-      
-    },
+  
     weight: {
       type: Number,
       

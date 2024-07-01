@@ -49,14 +49,14 @@ const BuySchema = new mongoose.Schema(
 
 BuySchema.pre(/^find/, function (next) {
   this.populate({ path: 'user', select: 'name -_id' })
-    .populate({ path: 'product', select: 'type avg_price weight -_id' })
+    .populate({ path: 'product', select: 'type avg_price wieght -_id' })
     .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on -_id' });
 
   next();
 });
 
 BuySchema.statics.addToWarehouse = async function (product, product_code, name, E_wieght, size) {
-  await Warehouse.create({ product, product_code, name, weight:E_wieght, size });
+  await Warehouse.create({ product, product_code, name, weight : E_wieght, size });
 };
 
 
