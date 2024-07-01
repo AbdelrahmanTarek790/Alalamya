@@ -55,8 +55,8 @@ BuySchema.pre(/^find/, function (next) {
   next();
 });
 
-BuySchema.statics.addToWarehouse = async function (product, product_code, name, E_wieght, size) {
-  await Warehouse.create({ product, product_code, name, weight : E_wieght, size });
+BuySchema.statics.addToWarehouse = async function (user,product, product_code,E_wieght, size) {
+  await Warehouse.create({ user,product, product_code, weight : E_wieght, size });
 };
 
 
@@ -157,7 +157,7 @@ BuySchema.statics.allcalc_b = async function(supplayrId,price_Pay) {
 
 BuySchema.post('save', async function () {
   const product = await Product.findById(this.product);
-  await this.constructor.addToWarehouse(this.product, this.product_code, product.type, product.weight, this.size);
+  await this.constructor.addToWarehouse(this.user,this.product, this.product_code, this.E_wieght, this.size);
   await this.constructor.calcAveragePrice(this.product)
   await this.constructor.updateProductWeight(this.product,this.E_wieght);await this.constructor.takeMoney_d(this.supplayr,this.price_all);
   await this.constructor.takeMoney_b(this.supplayr,this.pay);
