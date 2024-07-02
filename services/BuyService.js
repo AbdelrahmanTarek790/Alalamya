@@ -52,7 +52,9 @@ exports.printExcel = (Buy, modelName = 'Supplayr') => asyncHandler(async (req, r
     // Execute query
     const { mongooseQuery } = apiFeatures;
     const documents = await mongooseQuery;
-  
+      // Set response headers
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
     // Convert to Excel
     const workbook = XLSX.utils.book_new();
     const worksheetData = documents.map(doc => {
