@@ -43,9 +43,7 @@ router
   );
   router
   .route('/export-excel')
-  .get(
-    printExcel
-  );
+  .get(printExcel);
 
 
 module.exports = router;
