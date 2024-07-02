@@ -47,7 +47,7 @@ if (process.env.NODE_ENV === 'development') {
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
 
-// Limit each IP to 100 requests per `window` (here, per 15 minutes)
+/*// Limit each IP to 100 requests per `window` (here, per 15 minutes)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
@@ -57,7 +57,7 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 app.use('/api', limiter);
-
+*/
 
 // Mount Routes
 mountRoutes(app);
