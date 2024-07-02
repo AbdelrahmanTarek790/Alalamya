@@ -56,7 +56,7 @@ exports.printExcel = (Buy, modelName = 'Supplayr') => asyncHandler(async (req, r
     // Convert to Excel
     const workbook = XLSX.utils.book_new();
     const worksheetData = documents.map(doc => {
-      const docObj = doc.toObject();
+     const docObj = doc.toObject();
       return {
         'اسم المستخدم': doc.user ? doc.user.name : '',
         'اسم المنتج': doc.product ? doc.product.name : '',

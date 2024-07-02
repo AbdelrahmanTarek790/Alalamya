@@ -32,7 +32,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin','manager'),
+    authService.allowedTo('admin','manager','user2'),
     getSell_bellValidator, getSell_bell)
   .put(
     authService.protect,

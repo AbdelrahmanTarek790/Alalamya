@@ -42,7 +42,7 @@ router
     deleteBuy
   );
   router
-  .route('/export/excel')
+  .route('/export-excel')
   .get(
     printExcel
   );
