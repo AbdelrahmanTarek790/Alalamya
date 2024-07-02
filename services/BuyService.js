@@ -79,9 +79,7 @@ exports.printExcel = (Buy, modelName = 'Supplayr') => asyncHandler(async (req, r
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
   
-    // Set response headers
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+   
   
     // Send Excel file
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
