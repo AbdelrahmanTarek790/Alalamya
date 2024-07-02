@@ -9,6 +9,7 @@ const Buy = require('../models/BuyModel');
 
 
 
+
 // @desc    Get list of Buy
 // @route   GET /api/v1/Buys
 // @access  Public
@@ -17,7 +18,7 @@ exports.getBuys = factory.getAll(Buy,'Buy');
 // @desc    Get specific Buy by id
 // @route   GET /api/v1/Buys/:id
 // @access  Public
-exports.getBuy = factory.getOne(Buy,'Supplayr');
+exports.getBuy = factory.getOne(Buy,'supplayr');
 
 // @desc    Create Buy
 // @route   POST  /api/v1/Buys
