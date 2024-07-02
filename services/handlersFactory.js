@@ -81,7 +81,7 @@ exports.getAll = (Model, modelName = '') =>
       .json({ results: documents.length, paginationResult, data: documents });
   });
 
-exports.exportToExcel = (Model, modelName = '') => asyncHandler(async (req, res) => {
+/*exports.exportToExcel = (Model, modelName = '') => asyncHandler(async (req, res) => {
   let filter = {};
   if (req.filterObj) {
     filter = req.filterObj;
@@ -120,4 +120,4 @@ exports.exportToExcel = (Model, modelName = '') => asyncHandler(async (req, res)
   // Send Excel file
   const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
   res.send(excelBuffer);
-});
+});*/

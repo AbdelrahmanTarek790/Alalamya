@@ -18,6 +18,9 @@ const {
 const authService = require('../services/authService');
 
 const router = express.Router();
+router
+.route('/export-excel')
+.get(printExcel);
 
 router
   .route('/')
@@ -41,9 +44,7 @@ router
     deleteBuyValidator,
     deleteBuy
   );
-  router
-  .route('/export-excel')
-  .get(printExcel);
+ 
 
 
 module.exports = router;

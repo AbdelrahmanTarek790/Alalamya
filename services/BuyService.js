@@ -52,14 +52,13 @@ exports.printExcel = (Buy, modelName = 'Supplayr') => asyncHandler(async (req, r
     // Execute query
     const { mongooseQuery } = apiFeatures;
     const documents = await mongooseQuery;
-      // Set response headers
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+      
     // Convert to Excel
     const workbook = XLSX.utils.book_new();
     const worksheetData = documents.map(doc => {
      const docObj = doc.toObject();
       return {
+        ...docObj,
         'اسم المستخدم': doc.user ? doc.user.name : '',
         'اسم المنتج': doc.product ? doc.product.name : '',
         'اسم المورد': doc.supplayr ? doc.supplayr.supplayr_name : '',
@@ -79,7 +78,9 @@ exports.printExcel = (Buy, modelName = 'Supplayr') => asyncHandler(async (req, r
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
   
-   
+   // Set response headers
+   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+   res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
   
     // Send Excel file
     const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
