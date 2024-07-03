@@ -38,6 +38,11 @@ const taxSchema = new mongoose.Schema(
       type: Number,
       
     },
+    
+     Notes: {
+      type:String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
