@@ -1,4 +1,5 @@
 const express = require('express');
+
 const {
   getBuyValidator,
   createBuyValidator,
@@ -12,15 +13,14 @@ const {
   createBuy,
   updateBuy,
   deleteBuy,
-  printExcel,
+  exportToExcel,
   
 } = require('../services/BuyService');
+
+
 const authService = require('../services/authService');
 
 const router = express.Router();
-router
-.route('/export-excel')
-.get(printExcel);
 
 router
   .route('/')
@@ -31,7 +31,7 @@ router
   );
 router
   .route('/:id')
-  .get(getBuyValidator, getBuy)
+  .get(getBuyValidator,getBuy)
   .put(
     authService.protect,
     authService.allowedTo('admin', 'manager'),
@@ -44,7 +44,11 @@ router
     deleteBuyValidator,
     deleteBuy
   );
- 
+  
+router
+  .route('/export/excel')
+  .get(exportToExcel);
+  
 
 
 module.exports = router;

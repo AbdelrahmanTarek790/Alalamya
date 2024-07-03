@@ -33,7 +33,7 @@ exports.updateSell = factory.updateOne(Sell);
 // @access  Private
 exports.deleteSell = factory.deleteOne(Sell);
 
-exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (req, res) => {
+exports.printExcel_Sell =  asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
@@ -43,16 +43,14 @@ exports.printExcel_Sell =  (Sell, modelName = 'Clint') => asyncHandler(async (re
     const apiFeatures = new ApiFeatures(Sell.find(filter).populate('user').populate('product').populate('clint'), req.query)
       .paginate(documentsCounts)
       .filter()
-      .search(modelName)
+      .search('Clint')
       .limitFields()
       .sort();
   
     // Execute query
     const { mongooseQuery } = apiFeatures;
     const documents = await mongooseQuery;
-      // Set response headers
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+      
     // Convert to Excel
     const workbook = XLSX.utils.book_new();
     const worksheetData = documents.map(doc => {

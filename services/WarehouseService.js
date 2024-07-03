@@ -34,7 +34,7 @@ exports.updateWarehouse = factory.updateOne(Warehouse);
 exports.deleteWarehouse = factory.deleteOne(Warehouse);
 
 
-exports.printExcel = (Warehouse, modelName = 'Supplayr') => asyncHandler(async (req, res) => {
+exports.printExcel =  asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
@@ -44,7 +44,7 @@ exports.printExcel = (Warehouse, modelName = 'Supplayr') => asyncHandler(async (
     const apiFeatures = new ApiFeatures(Warehouse.find(filter).populate('user').populate('product').populate('supplayr'), req.query)
       .paginate(documentsCounts)
       .filter()
-      .search(modelName)
+      .search('Supplayr')
       .limitFields()
       .sort();
   
