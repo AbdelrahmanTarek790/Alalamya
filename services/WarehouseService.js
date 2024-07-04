@@ -12,12 +12,12 @@ const Warehouse = require('../models/WarehouseModel');
 // @desc    Get list of Warehouse
 // @route   GET /api/v1/Warehouses
 // @access  Public
-exports.getWarehouses = factory.getAll(Warehouse,'Supplayr');
+exports.getWarehouses = factory.getAll(Warehouse,'Warehouse');
 
 // @desc    Get specific Warehouse by id
 // @route   GET /api/v1/Warehouses/:id
 // @access  Public
-exports.getWarehouse = factory.getOne(Warehouse);
+exports.getWarehouse = factory.getOne(Warehouse,'Supplayr');
 
 // @desc    Create Warehouse
 // @route   POST  /api/v1/Warehouses
