@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Supplayr =require('./SupplayrModel');
 
 const warehouseSchema = new mongoose.Schema(
   {

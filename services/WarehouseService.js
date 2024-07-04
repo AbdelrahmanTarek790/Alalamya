@@ -12,7 +12,7 @@ const Warehouse = require('../models/WarehouseModel');
 // @desc    Get list of Warehouse
 // @route   GET /api/v1/Warehouses
 // @access  Public
-exports.getWarehouses = factory.getAll(Warehouse,'Warehouse');
+exports.getWarehouses = factory.getAll(Warehouse,'Supplayr');
 
 // @desc    Get specific Warehouse by id
 // @route   GET /api/v1/Warehouses/:id
