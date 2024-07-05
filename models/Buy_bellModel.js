@@ -40,25 +40,25 @@ const Buy_bellSchema = new mongoose.Schema(
 
 Buy_bellSchema.pre(/^find/, function (next) {
   this.populate({ path: 'user', select: 'name _id' })
-    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price _id' });
-
+      .populate({ path: 'supplayr', select: 'supplayr_name price_on price_pay total_price _id' });
   next();
 });
 
-Buy_bellSchema.statics.takeMoney_d = async function(supplayrId, amount) {
-  await Supplayr.findByIdAndUpdate(supplayrId, {
-    $inc: { price_pay: +amount },
-  });
+Buy_bellSchema.statics.takeMoney_d = async function (supplayrName, amount) {
+  await Supplayr.findOneAndUpdate(
+    { supplayr_name: supplayrName },
+    { $inc: { price_pay: +amount } }
+  );
 };
 
-Buy_bellSchema.statics.takeMoney_b = async function(supplayrId, amount) {
-  await Supplayr.findByIdAndUpdate(supplayrId, {
-    $inc: { price_on: -amount , moneyOn_me: -amount },
-
-  });
+Buy_bellSchema.statics.takeMoney_b = async function (supplayrName, amount) {
+  await Supplayr.findOneAndUpdate(
+    { supplayr_name: supplayrName },
+    { $inc: { price_on: -amount, moneyOn_me: -amount } }
+  );
 };
 
-Buy_bellSchema.pre('save', async function(next) {
+Buy_bellSchema.pre('save', async function (next) {
   const supplayr = await Supplayr.findOne({ supplayr_name: this.supplayr_name });
 
   if (!supplayr) {
@@ -66,23 +66,21 @@ Buy_bellSchema.pre('save', async function(next) {
     return next(err);
   }
 
-  this.supplayr = supplayr._id;
   next();
 });
 
 Buy_bellSchema.post('save', async function () {
- 
-  await this.constructor.takeMoney_d(this.supplayr, this.pay_bell);
-  await this.constructor.takeMoney_b(this.supplayr, this.pay_bell);
+  await this.constructor.takeMoney_d(this.supplayr_name, this.pay_bell);
+  await this.constructor.takeMoney_b(this.supplayr_name, this.pay_bell);
 });
-
 
 Buy_bellSchema.post('findOneAndUpdate', async function (doc) {
   if (doc) {
-    await doc.constructor.takeMoney_d(doc.supplayr, doc.pay_bell);
-    await doc.constructor.takeMoney_b(doc.supplayr, doc.pay_bell);
+    await doc.constructor.takeMoney_d(doc.supplayr_name, doc.pay_bell);
+    await doc.constructor.takeMoney_b(doc.supplayr_name, doc.pay_bell);
   }
 });
+
 const Buy_bell = mongoose.model('Buy_bell', Buy_bellSchema);
 
 module.exports = Buy_bell;
