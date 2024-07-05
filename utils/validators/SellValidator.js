@@ -6,7 +6,7 @@ exports.createSellValidator = [
 
     check('clint')
       .isMongoId()
-      .withMessage('Invalid user id format'),
+      .withMessage('Invalid clint id format'),
 
     check('o_wieght')
     .notEmpty()
