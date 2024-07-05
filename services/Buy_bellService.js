@@ -17,7 +17,7 @@ exports.getBuy_bells = factory.getAll(Buy_bell,'Buy_bell');
 // @desc    Get specific Buy_bell by id
 // @route   GET /api/v1/Buys/:id
 // @access  Public
-exports.getBuy_bell = factory.getOne(Buy_bell,'Supplayr');
+exports.getBuy_bell = factory.getOne(Buy_bell,'supplayr');
 
 // @desc    Create Buy_bell
 // @route   POST  /api/v1/Buys
