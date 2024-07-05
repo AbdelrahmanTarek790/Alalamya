@@ -26,8 +26,25 @@ exports.createSell = factory.createOne(Sell);
 // @desc    Update specific Sell
 // @route   PUT /api/v1/Sells/:id
 // @access  Private
-exports.updateSell = factory.updateOne(Sell);
+exports.updateSell =  asyncHandler(async (req, res, next) => {
+  const document = await Sell.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+
+  
+  await document.constructor.AddmoneyAndtakeMoneyS(document.clint);
+  await document.constructor.takeMoney_ds(document.clint, document.price_allQuantity);
+  await document.constructor.takeMoney_bs(document.clint, document.pay_now);
+
+  // لا تقم بتفعيل عملية الحفظ مرة أخرى لتجنب تفعيل post('save')
+
+  res.status(200).json({ data: document });
+});
 // @desc    Delete specific Sell
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private

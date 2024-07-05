@@ -28,8 +28,23 @@ exports.createBuy = factory.createOne(Buy);
 // @desc    Update specific Buy
 // @route   PUT /api/v1/Buys/:id
 // @access  Private
-exports.updateBuy = factory.updateOne(Buy);
+exports.updateBuy =  asyncHandler(async (req, res, next) => {
+  const document = await Buy.findOneAndUpdate({ _id: req.params.id }, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+
+  // Trigger "post" middleware
+  await document.constructor.updateWarehouse(document.user, document.product, document.product_code, document.E_wieght, document.size);
+  await document.constructor.calcAveragePrice(document.product);
+  await document.constructor.updateProductWeight(document.product, document.E_wieght);
+
+  res.status(200).json({ data: document });
+});
 // @desc    Delete specific Buy
 // @route   DELETE /api/v1/Buys/:id
 // @access  Private

@@ -41,7 +41,7 @@ const SellSchema = new mongoose.Schema(
     pay_now: {
       type: Number,
       required: true,
-      default :0,
+      default: 0,
     },
   },
   { timestamps: true }
@@ -71,11 +71,9 @@ SellSchema.statics.removeFromWarehouse = async function (product_code) {
 
 SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
   const result2 = await this.aggregate([
-    // مرحلة 1: الحصول على جميع عمليات البيع لعميل معين
     {
       $match: { clint: clintId },
     },
-    // مرحلة 2: تجميع عمليات البيع بناءً على clintId وحساب الأسعار، الوزن
     {
       $group: {
         _id: '$clint',
@@ -90,7 +88,6 @@ SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
       money_pay: result2[0].monyePay,
       total_monye: result2[0].totalMonye,
     });
-    console.log(result2[0].monyePay);
   }
 };
 
@@ -112,6 +109,16 @@ SellSchema.post('save', async function () {
   await this.constructor.AddmoneyAndtakeMoneyS(this.clint);
   await this.constructor.takeMoney_ds(this.clint, this.price_allQuantity);
   await this.constructor.takeMoney_bs(this.clint, this.pay_now);
+});
+
+// تعديل بحيث لا يتم أي تغيير في المخزن عند استخدام update
+SellSchema.post('findOneAndUpdate', async function (doc) {
+  if (doc) {
+    // لا تقم بتحديث الوزن في المخزن عند التعديل
+    await doc.constructor.AddmoneyAndtakeMoneyS(doc.clint);
+    await doc.constructor.takeMoney_ds(doc.clint, doc.price_allQuantity);
+    await doc.constructor.takeMoney_bs(doc.clint, doc.pay_now);
+  }
 });
 
 const Sell = mongoose.model('Sell', SellSchema);
