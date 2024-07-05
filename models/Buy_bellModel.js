@@ -39,8 +39,8 @@ const Buy_bellSchema = new mongoose.Schema(
 );
 
 Buy_bellSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'user', select: 'name _id' })
-      .populate({ path: 'supplayr', select: 'supplayr_name price_on price_pay total_price _id' });
+  this.populate({ path: 'user', select: 'name _id' });
+      //.populate({ path: 'supplayr', select: 'supplayr_name price_on price_pay total_price _id' });
   next();
 });
 

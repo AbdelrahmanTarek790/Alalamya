@@ -39,8 +39,8 @@ const Sell_bellSchema = new mongoose.Schema(
 );
 
 Sell_bellSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'user', select: 'name _id' })
-      .populate({ path: 'clint', select: 'clint_name money_on money_pay total_monye _id' });
+  this.populate({ path: 'user', select: 'name _id' });
+      //.populate({ path: 'clint', select: 'clint_name money_on money_pay total_monye _id' });
   next();
 });
 
