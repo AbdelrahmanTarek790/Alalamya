@@ -23,7 +23,22 @@ exports.createBuy_bell = factory.createOne(Buy_bell);
 // @desc    Update specific Buy_bell
 // @route   PUT /api/v1/Buys/:id
 // @access  Private
-exports.updateBuy_bell = factory.updateOne(Buy_bell);
+exports.updateBuy_bell =  asyncHandler(async (req, res, next) => {
+    const document = await Buy_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+  
+    if (!document) {
+      return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+    }
+  
+    // Trigger "post" middleware
+    await document.constructor.takeMoney_d(document.supplayr, document.pay_bell);
+    await document.constructor.takeMoney_b(document.supplayr, document.pay_bell);
+  
+    res.status(200).json({ data: document });
+  });
 
 // @desc    Delete specific Buy_bell
 // @route   DELETE /api/v1/Buys/:id

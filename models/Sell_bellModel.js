@@ -73,6 +73,13 @@ Sell_bellSchema.post('save', async function () {
   await this.constructor.takeMoney_b(this.clint, this.payBell);
 });
 
+Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
+  if (doc) {
+    await doc.constructor.takeMoney_d(doc.clint, doc.payBell);
+    await doc.constructor.takeMoney_b(doc.clint, doc.payBell);
+  }
+});
+
 const Sell_bell = mongoose.model('Sell_bell', Sell_bellSchema);
 
 module.exports = Sell_bell;
