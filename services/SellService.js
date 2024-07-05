@@ -12,7 +12,7 @@ const Sell = require('../models/sellModel');
 // @desc    Get list of Sell
 // @route   GET /api/v1/Sells
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Product');
+exports.getSells = factory.getAll(Sell,'Sell');
 
 // @desc    Get specific Sell by id
 // @route   GET /api/v1/Sells/:id

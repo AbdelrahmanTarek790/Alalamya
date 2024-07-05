@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
-
 const factory = require('./handlersFactory');
 const Sell_bell = require('../models/Sell_bellModel');
 
