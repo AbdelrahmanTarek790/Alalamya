@@ -45,48 +45,53 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.takeMoney_d = async function (clintId, amount) {
-  await Clint.findByIdAndUpdate(
-    clintId,
-    { $inc: { money_pay: amount } },
-    { new: true }
-  );
+Sell_bellSchema.statics.adjustClintBalance = async function (clintId, amountChange) {
+  if (!isNaN(amountChange) && amountChange !== 0) {
+    await Clint.findByIdAndUpdate(
+      clintId,
+      {
+        $inc: {
+          money_pay: amountChange,
+          money_on: -amountChange
+        }
+      },
+      { new: true }
+    );
+  }
 };
 
-Sell_bellSchema.statics.takeMoney_b = async function (clintId, amount) {
-  await Clint.findByIdAndUpdate(
-    clintId,
-    { $inc: { money_on: -amount } },
-    { new: true }
-  );
-};
+Sell_bellSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    this._originalPayBell = 0;  // Document is new, original amount is 0
+  } else {
+    const docToUpdate = await this.constructor.findById(this._id);
+    if (docToUpdate) {
+      this._originalPayBell = docToUpdate.payBell;
+    }
+  }
+  next();
+});
 
 Sell_bellSchema.post('save', async function () {
-  await this.constructor.takeMoney_d(this.clint, this.payBell);
-  await this.constructor.takeMoney_b(this.clint, this.payBell);
+  const payBellChange = this.payBell - this._originalPayBell;
+  if (!isNaN(payBellChange)) {
+    await this.constructor.adjustClintBalance(this.clint, payBellChange);
+  }
 });
 
 Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
   const docToUpdate = await this.model.findOne(this.getQuery());
-  if (!docToUpdate) return next(new Error('Document not found'));
-
-  this._originalPayBell = docToUpdate.payBell;
+  if (docToUpdate) {
+    this._originalPayBell = docToUpdate.payBell;
+  }
   next();
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
   if (doc) {
-    const originalPayBell = doc._originalPayBell;
-    const newPayBell = doc.payBell;
-
-    if (originalPayBell !== newPayBell) {
-      // Revert the old values
-      await doc.constructor.takeMoney_d(doc.clint, -originalPayBell);
-      await doc.constructor.takeMoney_b(doc.clint, -originalPayBell);
-
-      // Apply the new values
-      await doc.constructor.takeMoney_d(doc.clint, newPayBell);
-      await doc.constructor.takeMoney_b(doc.clint, newPayBell);
+    const payBellChange = doc.payBell - this._originalPayBell;
+    if (!isNaN(payBellChange)) {
+      await doc.constructor.adjustClintBalance(doc.clint, payBellChange);
     }
   }
 });
