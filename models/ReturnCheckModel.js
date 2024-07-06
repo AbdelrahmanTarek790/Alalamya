@@ -17,15 +17,13 @@ const ReturnedCheckSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
-const mount = this.amount;
 
 ReturnedCheckSchema.post('save', async function () {
+  const mount = this.amount; // تأكد من تحديد المبلغ هنا
   await Clint.findByIdAndUpdate(this.clint, {
-    $inc: { money_pay: -mount },
-    $inc: { money_on: +mount },
-
+    $inc: { money_pay: -mount, money_on: mount }
   });
 });
 
