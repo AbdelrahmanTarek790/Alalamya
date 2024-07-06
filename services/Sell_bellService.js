@@ -25,34 +25,33 @@ exports.createSell_bell = factory.createOne(Sell_bell);
 // @desc    Update specific Sell_bell
 // @route   PUT /api/v1/Sells/:id
 // @access  Private
-exports.updateSell_bell = aasyncHandler(async (req, res, next) => {
-  // الحصول على الوثيقة القديمة
+
+exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   const oldDocument = await Sell_bell.findById(req.params.id);
 
   if (!oldDocument) {
     return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
   }
 
-  // التحقق مما إذا كانت قيمة payBell قد تغيرت
   const payBellChanged = req.body.payBell !== undefined && req.body.payBell !== oldDocument.payBell;
-
-  let oldPayBell = 0; // القيمة الافتراضية لـ oldPayBell
+  let oldPayBell = 0;
 
   if (payBellChanged) {
-    // إعداد القيمة القديمة لـ payBell في التحديث
     oldPayBell = oldDocument.payBell;
   }
 
-  // إضافة oldPayBell إلى req.body
   req.body.oldPayBell = oldPayBell;
 
-  // تحديث الوثيقة
-  const document = await Sell_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
-    new: true,
-    runValidators: true,
-    // استبعاد oldPayBell من الوثيقة المرجعة
-    select: '-oldPayBell'
-  });
+  const document = await Sell_bell.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+      context: 'query', // تعيين context إلى 'query' لضمان توفر doc._update
+      select: '-oldPayBell' // استبعاد oldPayBell من الوثيقة المُرجعة
+    }
+  );
 
   if (!document) {
     return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
@@ -60,6 +59,7 @@ exports.updateSell_bell = aasyncHandler(async (req, res, next) => {
 
   res.status(200).json({ data: document });
 });
+
 // @desc    Delete specific Sell_bell
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private
