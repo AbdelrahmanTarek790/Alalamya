@@ -9,7 +9,8 @@ const Sell_bellSchema = new mongoose.Schema(
       ref: 'User',
     },
     clint: {
-      type: String,
+      type: mongoose.Schema.ObjectId,
+      ref: 'Clint',
       required: true,
     },
     payBell: {
@@ -44,25 +45,25 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.takeMoney_d = async function (clintName, priceall) {
-  const clint = await Clint.findOne({ clint_name: clintName });
+Sell_bellSchema.statics.takeMoney_d = async function (clintId, priceall) {
+  const clint = await Clint.findById(clintId);
   if (!clint) {
-    throw new Error(`Client with name ${clintName} not found`);
+    throw new Error(`Client with ID ${clintId} not found`);
   }
-  await Clint.findOneAndUpdate(
-    { clint_name: clintName },
+  await Clint.findByIdAndUpdate(
+    clintId,
     { $inc: { money_pay: priceall } },
     { new: true }
   );
 };
 
-Sell_bellSchema.statics.takeMoney_b = async function (clintName, pricePay) {
-  const clint = await Clint.findOne({ clint_name: clintName });
+Sell_bellSchema.statics.takeMoney_b = async function (clintId, pricePay) {
+  const clint = await Clint.findById(clintId);
   if (!clint) {
-    throw new Error(`Client with name ${clintName} not found`);
+    throw new Error(`Client with ID ${clintId} not found`);
   }
-  await Clint.findOneAndUpdate(
-    { clint_name: clintName },
+  await Clint.findByIdAndUpdate(
+    clintId,
     { $inc: { money_on: -pricePay } },
     { new: true }
   );

@@ -26,22 +26,40 @@ exports.createSell_bell = factory.createOne(Sell_bell);
 // @route   PUT /api/v1/Sells/:id
 // @access  Private
 exports.updateSell_bell = asyncHandler(async (req, res, next) => {
-    const document = await Sell_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
-      new: true,
-      runValidators: true,
-    });
-  
-    if (!document) {
-      return next(new ApiError(`No document for this id ${req.params.id}`, 404));
-    }
-  
-    // Trigger "post" middleware
-    /*await document.constructor.takeMoney_d(document.clint, document.payBell);
-    await document.constructor.takeMoney_b(document.clint, document.payBell);*/
-  
-    res.status(200).json({ data: document });
+  // الحصول على الوثيقة القديمة
+  const oldDocument = await Sell_bell.findById(req.params.id);
+
+  if (!oldDocument) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+
+  // التحقق مما إذا كانت قيمة payBell قد تغيرت
+  const payBellChanged = req.body.payBell !== undefined && req.body.payBell !== oldDocument.payBell;
+
+  if (payBellChanged) {
+    // إعادة القيم الأصلية
+    await oldDocument.constructor.takeMoney_d(oldDocument.clint, -oldDocument.payBell);
+    await oldDocument.constructor.takeMoney_b(oldDocument.clint, -oldDocument.payBell);
+  }
+
+  // تحديث الوثيقة
+  const document = await Sell_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
+    new: true,
+    runValidators: true,
   });
 
+  if (!document) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+
+  // إذا كانت قيمة payBell قد تغيرت، قم بتحديث القيم الجديدة
+  if (payBellChanged) {
+    await document.constructor.takeMoney_d(document.clint, document.payBell);
+    await document.constructor.takeMoney_b(document.clint, document.payBell);
+  }
+
+  res.status(200).json({ data: document });
+});
 
 // @desc    Delete specific Sell_bell
 // @route   DELETE /api/v1/Sells/:id
