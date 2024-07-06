@@ -1,31 +1,18 @@
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
-const ApiFeatures = require('../utils/apiFeatures');
 const factory = require('./handlersFactory');
 const Sell_bell = require('../models/Sell_bellModel');
 
+// Get list of Sell
+exports.getSell_bells = factory.getAll(Sell_bell, 'Sell_bell');
 
+// Get specific Sell_bell by id
+exports.getSell_bell = factory.getOne(Sell_bell, 'clint');
 
-
-
-// @desc    Get list of Sell
-// @route   GET /api/v1/Sells
-// @access  Public
-exports.getSell_bells = factory.getAll(Sell_bell,'Sell_bell');
-
-// @desc    Get specific Sell_bell by id
-// @route   GET /api/v1/Sells/:id
-// @access  Public
-exports.getSell_bell = factory.getOne(Sell_bell,'clint');
-
-// @desc    Create Sell_bell
-// @route   POST  /api/v1/Sells
-// @access  Private
+// Create Sell_bell
 exports.createSell_bell = factory.createOne(Sell_bell);
-// @desc    Update specific Sell_bell
-// @route   PUT /api/v1/Sells/:id
-// @access  Private
 
+// Update specific Sell_bell
 exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   const oldDocument = await Sell_bell.findById(req.params.id);
 
@@ -60,12 +47,5 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: document });
 });
 
-// @desc    Delete specific Sell_bell
-// @route   DELETE /api/v1/Sells/:id
-// @access  Private
+// Delete specific Sell_bell
 exports.deleteSell_bell = factory.deleteOne(Sell_bell);
-
-
-
-
-

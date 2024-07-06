@@ -71,7 +71,7 @@ Sell_bellSchema.post('save', async function () {
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc && doc._id) {
+  if (doc && doc._update) {
     const oldDocument = await this.model.findById(doc._id).exec();
     if (oldDocument) {
       const oldPayBell = oldDocument.payBell;
