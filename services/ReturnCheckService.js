@@ -8,13 +8,13 @@ exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
   const { clint, amount } = req.body;
 
   // تحقق من وجود العميل باستخدام الاسم
-  const clint_ = await Clint.findById({clint});
+  const clint_ = await Clint.findById(clint);
   if (!clint_) {
     return next(new ApiError('Client not found', 404));
   }
 
   // إنشاء الشيك المرتجع
-  const returnedCheck = await ReturnedCheck.create({ clint_:clint, amount });
+  const returnedCheck = await ReturnedCheck.create({ clint, amount });
 
   res.status(201).json({ data: returnedCheck });
 });
