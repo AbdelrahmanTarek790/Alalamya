@@ -48,7 +48,7 @@ Buy_bellSchema.pre(/^find/, function (next) {
 Buy_bellSchema.statics.takeMoney_d = async function (supplayrId, amount) {
   await Supplayr.findByIdAndUpdate(
     supplayrId,
-    { $inc: { price_pay: +amount , price_on : -amuont} },
+    { $inc: { price_pay: +amount , price_on : -amount} },
     { new: true }
   );
 };
