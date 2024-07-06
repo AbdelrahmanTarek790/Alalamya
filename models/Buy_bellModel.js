@@ -48,7 +48,7 @@ Buy_bellSchema.pre(/^find/, function (next) {
 Buy_bellSchema.statics.takeMoney_d = async function (supplayrId, amount) {
   await Supplayr.findByIdAndUpdate(
     supplayrId,
-    { $inc: { price_pay: +amount } },
+    { $inc: { price_pay: +amount , price_on : -amuont} },
     { new: true }
   );
 };
@@ -66,7 +66,7 @@ Buy_bellSchema.post('save', async function () {
   await this.constructor.takeMoney_b(this.supplayr, this.pay_bell);
 });
 
-Buy_bellSchema.post('findOneAndUpdate', async function (doc) {
+Buy_bellSchema.pre('findOneAndUpdate', async function (doc) {
   if (doc) {
     await doc.constructor.takeMoney_d(doc.supplayr, doc.pay_bell);
     await doc.constructor.takeMoney_b(doc.supplayr, doc.pay_bell);
