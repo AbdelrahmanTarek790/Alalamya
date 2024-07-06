@@ -5,14 +5,37 @@ const Clint = require('../models/ClintModel');
 const Supplier = require('../models/SupplayrModel');
 
 exports.generateReport = async (startDate, endDate) => {
-  const matchStage = {
-    $match: {
-      createdAt: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
+  let matchStage = {};
+
+  // تحديد تاريخ البداية والنهاية
+  if (startDate && endDate) {
+    matchStage = {
+      $match: {
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
       }
-    }
-  };
+    };
+  } else if (startDate) {
+    matchStage = {
+      $match: {
+        createdAt: {
+          $gte: new Date(startDate)
+        }
+      }
+    };
+  } else {
+    // إذا لم يتم توفير أي من تاريخ البداية أو النهاية، استخدم تاريخ اليوم فقط
+    matchStage = {
+      $match: {
+        createdAt: {
+          $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          $lte: new Date()
+        }
+      }
+    };
+  }
 
   // حساب إجمالي المبيعات
   const totalSales = await Sell.aggregate([
