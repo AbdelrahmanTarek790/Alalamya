@@ -67,7 +67,6 @@ Sell_bellSchema.post('save', async function (next) {
       this._originalPayBell = docToUpdate.payBell;
     }
   }
-  next();
 });
 
 Sell_bellSchema.post('save', async function () {
