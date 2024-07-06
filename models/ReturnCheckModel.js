@@ -21,14 +21,17 @@ const ReturnedCheckSchema = new mongoose.Schema(
 );
 
 ReturnedCheckSchema.post('save', async function () {
-  const mount = this.amount;
+  const amount = this.amount;
 
-  if (!isNaN(mount)) {
-    await Clint.findByIdAndUpdate(this.clint, {
-      $inc: { money_pay: -mount, money_on: mount }
+  // التحقق من أن المبلغ هو رقم صالح
+  if (!isNaN(amount)) {
+    // تحديث حقول العميل
+    const clintId = this.clint;
+    await Clint.findByIdAndUpdate(clintId, {
+      $inc: { money_pay: -amount, money_on: amount }
     });
   } else {
-    console.error('Invalid amount value:', mount);
+    console.error('Invalid amount value:', amount);
   }
 });
 
