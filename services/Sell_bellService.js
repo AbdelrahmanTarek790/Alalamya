@@ -22,7 +22,7 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
 
   const payBellChanged = req.body.payBell !== undefined && req.body.payBell !== oldDocument.payBell;
   let oldPayBell = 0;
-
+  let  newPayBell =0 ;
   if (payBellChanged) {
     oldPayBell = oldDocument.payBell;
   }
