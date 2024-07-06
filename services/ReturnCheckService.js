@@ -5,11 +5,11 @@ const ApiError = require('../utils/apiError');
 
 // إنشاء شيك مرتجع
 exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
-  const { clint_name, amount } = req.body;
+  const { clint, amount } = req.body;
 
   // تحقق من وجود العميل باستخدام الاسم
-  const clint = await Clint.findOne({ clint_name });
-  if (!clint) {
+  const clint_ = await Clint.findById({clint});
+  if (!clint_) {
     return next(new ApiError('Client not found', 404));
   }
 
