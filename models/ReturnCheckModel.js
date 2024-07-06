@@ -21,10 +21,15 @@ const ReturnedCheckSchema = new mongoose.Schema(
 );
 
 ReturnedCheckSchema.post('save', async function () {
-  const mount = this.amount; // تأكد من تحديد المبلغ هنا
-  await Clint.findByIdAndUpdate(this.clint, {
-    $inc: { money_pay: -mount, money_on: mount }
-  });
+  const mount = this.amount;
+
+  if (!isNaN(mount)) {
+    await Clint.findByIdAndUpdate(this.clint, {
+      $inc: { money_pay: -mount, money_on: mount }
+    });
+  } else {
+    console.error('Invalid amount value:', mount);
+  }
 });
 
 const ReturnedCheck = mongoose.model('ReturnedCheck', ReturnedCheckSchema);

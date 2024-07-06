@@ -7,10 +7,15 @@ const ApiError = require('../utils/apiError');
 exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
   const { clint, amount } = req.body;
 
-  // تحقق من وجود العميل باستخدام الاسم
+  // تحقق من وجود العميل باستخدام المعرف
   const clint_ = await Clint.findById(clint);
   if (!clint_) {
     return next(new ApiError('Client not found', 404));
+  }
+
+  // تحقق من أن المبلغ هو رقم صالح
+  if (isNaN(amount)) {
+    return next(new ApiError('Invalid amount value', 400));
   }
 
   // إنشاء الشيك المرتجع
