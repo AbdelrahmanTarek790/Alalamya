@@ -36,7 +36,7 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
       new: true,
       runValidators: true,
       context: 'query', // تعيين context إلى 'query' لضمان توفر doc._update
-      select: '-oldPayBell' // استبعاد oldPayBell من الوثيقة المُرجعة
+      select: 'oldPayBell' // استبعاد oldPayBell من الوثيقة المُرجعة
     }
   );
 
