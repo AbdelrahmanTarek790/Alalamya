@@ -71,14 +71,17 @@ Sell_bellSchema.post('save', async function () {
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc && doc._update) {
+  if (doc && doc._update && doc._update.payBell !== undefined) {
     const oldDocument = await this.model.findById(doc._id).exec();
     if (oldDocument) {
       const oldPayBell = oldDocument.payBell;
-      await doc.constructor.updateMoney(doc.clint, oldPayBell, doc.payBell);
+      const newPayBell = doc._update.payBell;
+      await doc.constructor.updateMoney(doc.clint, oldPayBell, newPayBell);
     }
   }
 });
+
+
 
 const Sell_bell = mongoose.model('Sell_bell', Sell_bellSchema);
 
