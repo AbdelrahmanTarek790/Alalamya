@@ -3,16 +3,24 @@ const ApiError = require('../utils/apiError');
 const factory = require('./handlersFactory');
 const Sell_bell = require('../models/Sell_bellModel');
 
-// Get list of Sell
+// @desc    Get list of Sell
+// @route   GET /api/v1/Sells
+// @access  Public
 exports.getSell_bells = factory.getAll(Sell_bell, 'Sell_bell');
 
-// Get specific Sell_bell by id
+// @desc    Get specific Sell_bell by id
+// @route   GET /api/v1/Sells/:id
+// @access  Public
 exports.getSell_bell = factory.getOne(Sell_bell, 'clint');
 
-// Create Sell_bell
+// @desc    Create Sell_bell
+// @route   POST /api/v1/Sells
+// @access  Private
 exports.createSell_bell = factory.createOne(Sell_bell);
 
-// Update specific Sell_bell
+// @desc    Update specific Sell_bell
+// @route   PUT /api/v1/Sells/:id
+// @access  Private
 exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   const oldDocument = await Sell_bell.findById(req.params.id);
 
@@ -22,31 +30,29 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
 
   const payBellChanged = req.body.payBell !== undefined && req.body.payBell !== oldDocument.payBell;
   let oldPayBell = 0;
-  let  newPayBell =0 ;
+
   if (payBellChanged) {
     oldPayBell = oldDocument.payBell;
   }
 
-  req.body.oldPayBell = oldPayBell;
-  req.body.PayBell= newPayBell;
-   
-  const document = await Sell_bell.findOneAndUpdate(
-    { _id: req.params.id },
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-      context: 'query', // تعيين context إلى 'query' لضمان توفر doc._update
-      select: '-oldPayBell' // استبعاد oldPayBell من الوثيقة المُرجعة
-    }
-  );
+  const document = await Sell_bell.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
   if (!document) {
-    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+
+  if (payBellChanged) {
+    const newPayBell = req.body.payBell;
+    await document.constructor.takeMoney_d(document.clint, newPayBell - oldPayBell);
   }
 
   res.status(200).json({ data: document });
 });
 
-// Delete specific Sell_bell
+// @desc    Delete specific Sell_bell
+// @route   DELETE /api/v1/Sells/:id
+// @access  Private
 exports.deleteSell_bell = factory.deleteOne(Sell_bell);
