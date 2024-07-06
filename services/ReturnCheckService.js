@@ -14,7 +14,7 @@ exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
   }
 
   // إنشاء الشيك المرتجع
-  const returnedCheck = await ReturnedCheck.create({ clint:clint, amount });
+  const returnedCheck = await ReturnedCheck.create({ clint_:clint, amount });
 
   res.status(201).json({ data: returnedCheck });
 });
