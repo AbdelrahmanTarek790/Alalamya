@@ -60,7 +60,7 @@ Sell_bellSchema.statics.adjustClintBalance = async function (clintId, payBellOld
   }
 };
 
-Sell_bellSchema.pre('save', async function (next) {
+Sell_bellSchema.post('save', async function (next) {
   if (!this.isNew) {
     const docToUpdate = await this.constructor.findById(this._id);
     if (docToUpdate) {
@@ -78,7 +78,7 @@ Sell_bellSchema.post('save', async function () {
   }
 });
 
-Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
+Sell_bellSchema.post('findOneAndUpdate', async function (next) {
   const docToUpdate = await this.model.findOne(this.getQuery());
   if (docToUpdate) {
     this._originalPayBell = docToUpdate.payBell;
