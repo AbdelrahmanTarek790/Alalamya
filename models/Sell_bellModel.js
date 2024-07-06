@@ -9,8 +9,7 @@ const Sell_bellSchema = new mongoose.Schema(
       ref: 'User',
     },
     clint: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Clint',
+      type: String,
       required: true,
     },
     payBell: {
@@ -45,49 +44,39 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.adjustClintBalance = async function (clintId, payBellOld, payBellNew) {
-  if (!isNaN(payBellOld) && !isNaN(payBellNew)) {
-    await Clint.findByIdAndUpdate(
-      clintId,
-      {
-        $inc: {
-          money_pay: payBellNew - payBellOld,
-          money_on: payBellOld - payBellNew
-        }
-      },
-      { new: true }
-    );
+Sell_bellSchema.statics.takeMoney_d = async function (clintName, priceall) {
+  const clint = await Clint.findOne({ clint_name: clintName });
+  if (!clint) {
+    throw new Error(`Client with name ${clintName} not found`);
   }
+  await Clint.findOneAndUpdate(
+    { clint_name: clintName },
+    { $inc: { money_pay: priceall } },
+    { new: true }
+  );
 };
 
-Sell_bellSchema.post('save', async function (next) {
-  if (!this.isNew) {
-    const docToUpdate = await this.constructor.findById(this._id);
-    if (docToUpdate) {
-      this._originalPayBell = docToUpdate.payBell;
-    }
+Sell_bellSchema.statics.takeMoney_b = async function (clintName, pricePay) {
+  const clint = await Clint.findOne({ clint_name: clintName });
+  if (!clint) {
+    throw new Error(`Client with name ${clintName} not found`);
   }
-});
+  await Clint.findOneAndUpdate(
+    { clint_name: clintName },
+    { $inc: { money_on: -pricePay } },
+    { new: true }
+  );
+};
 
 Sell_bellSchema.post('save', async function () {
-  if (this.isNew) {
-    await this.constructor.adjustClintBalance(this.clint, 0, this.payBell);
-  } else if (this._originalPayBell !== this.payBell) {
-    await this.constructor.adjustClintBalance(this.clint, this._originalPayBell, this.payBell);
-  }
-});
-
-Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
-  const docToUpdate = await this.model.findOne(this.getQuery());
-  if (docToUpdate) {
-    this._originalPayBell = docToUpdate.payBell;
-  }
-  next();
+  await this.constructor.takeMoney_d(this.clint, this.payBell);
+  await this.constructor.takeMoney_b(this.clint, this.payBell);
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc && this._originalPayBell !== doc.payBell) {
-    await doc.constructor.adjustClintBalance(doc.clint, this._originalPayBell, doc.payBell);
+  if (doc) {
+    await doc.constructor.takeMoney_d(doc.clint, doc.payBell);
+    await doc.constructor.takeMoney_b(doc.clint, doc.payBell);
   }
 });
 
