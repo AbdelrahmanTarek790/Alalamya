@@ -26,7 +26,7 @@ exports.createSell_bell = factory.createOne(Sell_bell);
 // @route   PUT /api/v1/Sells/:id
 // @access  Private
 exports.updateSell_bell = asyncHandler(async (req, res, next) => {
-    const document = await Buy_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
+    const document = await Sell_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
       new: true,
       runValidators: true,
     });
