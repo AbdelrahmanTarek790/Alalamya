@@ -45,14 +45,14 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.adjustClintBalance = async function (clintId, amountChange) {
-  if (!isNaN(amountChange) && amountChange !== 0) {
+Sell_bellSchema.statics.adjustClintBalance = async function (clintId, payBellOld, payBellNew) {
+  if (!isNaN(payBellOld) && !isNaN(payBellNew)) {
     await Clint.findByIdAndUpdate(
       clintId,
       {
         $inc: {
-          money_pay: amountChange,
-          money_on: -amountChange
+          money_pay: payBellNew - payBellOld,
+          money_on: payBellOld - payBellNew
         }
       },
       { new: true }
@@ -61,9 +61,7 @@ Sell_bellSchema.statics.adjustClintBalance = async function (clintId, amountChan
 };
 
 Sell_bellSchema.pre('save', async function (next) {
-  if (this.isNew) {
-    this._originalPayBell = 0;  // Document is new, original amount is 0
-  } else {
+  if (!this.isNew) {
     const docToUpdate = await this.constructor.findById(this._id);
     if (docToUpdate) {
       this._originalPayBell = docToUpdate.payBell;
@@ -73,9 +71,10 @@ Sell_bellSchema.pre('save', async function (next) {
 });
 
 Sell_bellSchema.post('save', async function () {
-  const payBellChange = this.payBell - this._originalPayBell;
-  if (!isNaN(payBellChange)) {
-    await this.constructor.adjustClintBalance(this.clint, payBellChange);
+  if (this.isNew) {
+    await this.constructor.adjustClintBalance(this.clint, 0, this.payBell);
+  } else if (this._originalPayBell !== this.payBell) {
+    await this.constructor.adjustClintBalance(this.clint, this._originalPayBell, this.payBell);
   }
 });
 
@@ -88,11 +87,8 @@ Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc) {
-    const payBellChange = doc.payBell - this._originalPayBell;
-    if (!isNaN(payBellChange)) {
-      await doc.constructor.adjustClintBalance(doc.clint, payBellChange);
-    }
+  if (doc && this._originalPayBell !== doc.payBell) {
+    await doc.constructor.adjustClintBalance(doc.clint, this._originalPayBell, doc.payBell);
   }
 });
 
