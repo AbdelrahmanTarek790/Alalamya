@@ -45,39 +45,34 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.takeMoney_d = async function (clintId, priceall) {
+Sell_bellSchema.statics.updateMoney = async function (clintId, oldPayBell, newPayBell) {
   const clint = await Clint.findById(clintId);
   if (!clint) {
     throw new Error(`Client with ID ${clintId} not found`);
   }
-  await Clint.findByIdAndUpdate(
-    clintId,
-    { $inc: { money_pay: priceall } },
-    { new: true }
-  );
-};
+  const payBellDifference = newPayBell - oldPayBell;
 
-Sell_bellSchema.statics.takeMoney_b = async function (clintId, pricePay) {
-  const clint = await Clint.findById(clintId);
-  if (!clint) {
-    throw new Error(`Client with ID ${clintId} not found`);
+  if (payBellDifference !== 0) {
+    await Clint.findByIdAndUpdate(
+      clintId,
+      { 
+        $inc: { 
+          money_pay: payBellDifference,
+          money_on: -payBellDifference 
+        }
+      },
+      { new: true }
+    );
   }
-  await Clint.findByIdAndUpdate(
-    clintId,
-    { $inc: { money_on: -pricePay } },
-    { new: true }
-  );
 };
 
 Sell_bellSchema.post('save', async function () {
-  await this.constructor.takeMoney_d(this.clint, this.payBell);
-  await this.constructor.takeMoney_b(this.clint, this.payBell);
+  await this.constructor.updateMoney(this.clint, 0, this.payBell);
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
   if (doc) {
-    await doc.constructor.takeMoney_d(doc.clint, doc.payBell);
-    await doc.constructor.takeMoney_b(doc.clint, doc.payBell);
+    await doc.constructor.updateMoney(doc.clint, doc._update.oldPayBell, doc.payBell);
   }
 });
 

@@ -37,9 +37,8 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   const payBellChanged = req.body.payBell !== undefined && req.body.payBell !== oldDocument.payBell;
 
   if (payBellChanged) {
-    // إعادة القيم الأصلية
-    await oldDocument.constructor.takeMoney_d(oldDocument.clint, -oldDocument.payBell);
-    await oldDocument.constructor.takeMoney_b(oldDocument.clint, -oldDocument.payBell);
+    // إعداد القيمة القديمة لـ payBell في التحديث
+    req.body.oldPayBell = oldDocument.payBell;
   }
 
   // تحديث الوثيقة
@@ -52,15 +51,8 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
     return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
   }
 
-  // إذا كانت قيمة payBell قد تغيرت، قم بتحديث القيم الجديدة
-  if (payBellChanged) {
-    await document.constructor.takeMoney_d(document.clint, document.payBell);
-    await document.constructor.takeMoney_b(document.clint, document.payBell);
-  }
-
   res.status(200).json({ data: document });
 });
-
 // @desc    Delete specific Sell_bell
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private
