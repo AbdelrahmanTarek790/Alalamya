@@ -71,8 +71,12 @@ Sell_bellSchema.post('save', async function () {
 });
 
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc) {
-    await doc.constructor.updateMoney(doc.clint, doc._update.oldPayBell, doc.payBell);
+  if (doc && doc._id) {
+    const oldDocument = await this.model.findById(doc._id).exec();
+    if (oldDocument) {
+      const oldPayBell = oldDocument.payBell;
+      await doc.constructor.updateMoney(doc.clint, oldPayBell, doc.payBell);
+    }
   }
 });
 
