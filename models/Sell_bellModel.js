@@ -78,7 +78,7 @@ Sell_bellSchema.post('save', async function () {
   }
 });
 
-Sell_bellSchema.post('findOneAndUpdate', async function (next) {
+Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
   const docToUpdate = await this.model.findOne(this.getQuery());
   if (docToUpdate) {
     this._originalPayBell = docToUpdate.payBell;
