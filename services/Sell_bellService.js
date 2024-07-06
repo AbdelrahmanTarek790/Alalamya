@@ -39,12 +39,17 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
   if (payBellChanged) {
     // إعداد القيمة القديمة لـ payBell في التحديث
     req.body.oldPayBell = oldDocument.payBell;
+  } else {
+    // في حال عدم تغيير payBell، لا حاجة لـ oldPayBell
+    req.body.oldPayBell = oldDocument.payBell;
   }
 
   // تحديث الوثيقة
   const document = await Sell_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true,
     runValidators: true,
+    // استبدال oldPayBell من المشيئة
+    select: '-oldPayBell'
   });
 
   if (!document) {
