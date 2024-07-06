@@ -66,11 +66,13 @@ Buy_bellSchema.post('save', async function () {
   await this.constructor.takeMoney_b(this.supplayr, this.pay_bell);
 });
 
-Buy_bellSchema.pre('findOneAndUpdate', async function (doc) {
+Buy_bellSchema.pre('findOneAndUpdate', async function (next) {
+  const doc = await this.model.findOne(this.getQuery());
   if (doc) {
-    await doc.constructor.takeMoney_d(doc.supplayr, doc.pay_bell);
-    await doc.constructor.takeMoney_b(doc.supplayr, doc.pay_bell);
+    await this.model.takeMoney_d(doc.supplayr, doc.pay_bell);
+    await this.model.takeMoney_b(doc.supplayr, doc.pay_bell);
   }
+  next();
 });
 
 const Buy_bell = mongoose.model('Buy_bell', Buy_bellSchema);

@@ -25,20 +25,25 @@ exports.createBuy_bell = factory.createOne(Buy_bell);
 // @route   PUT /api/v1/Buys/:id
 // @access  Private
 exports.updateBuy_bell =  asyncHandler(async (req, res, next) => {
-    const document = await Buy_bell.findOneAndUpdate({ _id: req.params.id }, req.body, {
-      new: true,
-      runValidators: true,
-    });
-  
-    if (!document) {
-      return next(new ApiError(`No document for this id ${req.params.id}`, 404));
-    }
-  
-    // Trigger "post" middleware
-    
-  
-    res.status(200).json({ data: document });
+  const { id } = req.params;
+
+  // Find the document by ID and update it with the request body
+  const updatedDocument = await Buy_bell.findByIdAndUpdate(id, req.body, {
+    new: true, // Return the updated document
+    runValidators: true, // Run validators to ensure the updated document is valid
+    context: 'query' // Ensure the `doc._update` object is available in hooks
   });
+
+  // If no document found, return a 404 error
+  if (!updatedDocument) {
+    return next(new ApiError(`No document found for this ID: ${id}`, 404));
+  }
+
+  // Optionally, trigger post middleware actions here if needed
+
+  // Respond with the updated document in JSON format
+  res.status(200).json({ data: updatedDocument });
+});
 
 // @desc    Delete specific Buy_bell
 // @route   DELETE /api/v1/Buys/:id
