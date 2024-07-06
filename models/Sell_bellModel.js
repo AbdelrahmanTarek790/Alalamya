@@ -45,18 +45,18 @@ Sell_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Sell_bellSchema.statics.takeMoney_d = async function (clintId, priceall) {
+Sell_bellSchema.statics.takeMoney_d = async function (clintId, amount) {
   await Clint.findByIdAndUpdate(
     clintId,
-    { $inc: { money_pay: priceall } },
+    { $inc: { money_pay: amount } },
     { new: true }
   );
 };
 
-Sell_bellSchema.statics.takeMoney_b = async function (clintId, pricePay) {
+Sell_bellSchema.statics.takeMoney_b = async function (clintId, amount) {
   await Clint.findByIdAndUpdate(
     clintId,
-    { $inc: { money_on: -pricePay } },
+    { $inc: { money_on: -amount } },
     { new: true }
   );
 };
@@ -66,10 +66,28 @@ Sell_bellSchema.post('save', async function () {
   await this.constructor.takeMoney_b(this.clint, this.payBell);
 });
 
+Sell_bellSchema.pre('findOneAndUpdate', async function (next) {
+  const docToUpdate = await this.model.findOne(this.getQuery());
+  if (!docToUpdate) return next(new Error('Document not found'));
+
+  this._originalPayBell = docToUpdate.payBell;
+  next();
+});
+
 Sell_bellSchema.post('findOneAndUpdate', async function (doc) {
   if (doc) {
-    await doc.constructor.takeMoney_d(doc.clint, doc.payBell);
-    await doc.constructor.takeMoney_b(doc.clint, doc.payBell);
+    const originalPayBell = doc._originalPayBell;
+    const newPayBell = doc.payBell;
+
+    if (originalPayBell !== newPayBell) {
+      // Revert the old values
+      await doc.constructor.takeMoney_d(doc.clint, -originalPayBell);
+      await doc.constructor.takeMoney_b(doc.clint, -originalPayBell);
+
+      // Apply the new values
+      await doc.constructor.takeMoney_d(doc.clint, newPayBell);
+      await doc.constructor.takeMoney_b(doc.clint, newPayBell);
+    }
   }
 });
 
