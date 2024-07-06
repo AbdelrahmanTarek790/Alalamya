@@ -36,8 +36,8 @@ exports.updateSell_bell = asyncHandler(async (req, res, next) => {
     }
   
     // Trigger "post" middleware
-    await document.constructor.takeMoney_d(document.clint, document.payBell);
-    await document.constructor.takeMoney_b(document.clint, document.payBell);
+    /*await document.constructor.takeMoney_d(document.clint, document.payBell);
+    await document.constructor.takeMoney_b(document.clint, document.payBell);*/
   
     res.status(200).json({ data: document });
   });
