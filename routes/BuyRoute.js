@@ -36,10 +36,12 @@ router
   );
 router
   .route('/:id')
-  .get(getBuyValidator,getBuy)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),getBuyValidator,getBuy)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateBuyValidator,
     updateBuy
   )

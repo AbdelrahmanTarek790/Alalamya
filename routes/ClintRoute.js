@@ -15,8 +15,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(authService.protect,
-       authService.allowedTo('admin', 'manager'),getClints)
+  .get(getClints)
   .post(
     authService.protect,
     authService.allowedTo('admin', 'manager'),
@@ -25,8 +24,7 @@ router
 
 router
   .route('/:id')
-  .get(authService.protect,
-       authService.allowedTo('admin', 'manager'),getClint)
+  .get(getClint)
   .put(
     authService.protect,
     authService.allowedTo('admin'),
