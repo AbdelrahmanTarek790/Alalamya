@@ -51,7 +51,7 @@ const tax_supplayrSchema = new mongoose.Schema(
 
 tax_supplayrSchema.pre(/^find/, function (next) {
     this.populate({ path: 'user', select: 'name _id' })
-    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price _id ' });
+    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price dis_count _id ' });
   
     next();
   });
