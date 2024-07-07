@@ -9,7 +9,7 @@ const Tax_supplayr = require('../models/Tax_supplayrModel');
 // @desc    Get list of Tax_supplayr
 // @route   GET /api/v1/Tax_supplayrs
 // @access  Public
-exports.getTax_supplayrs = factory.getAll(Tax_supplayr);
+exports.getTax_supplayrs = factory.getAll(Tax_supplayr,'Tax_supplayr');
 
 // @desc    Get specific Tax_supplayr by id
 // @route   GET /api/v1/Tax_supplayr/:id

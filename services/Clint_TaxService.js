@@ -9,7 +9,7 @@ const Tax_clint = require('../models/Tax_clintModel');
 // @desc    Get list of Tax_clint
 // @route   GET /api/v1/Tax_clints
 // @access  Public
-exports.getTax_clints = factory.getAll(Tax_clint);
+exports.getTax_clints = factory.getAll(Tax_clint,'Tax_clint');
 
 // @desc    Get specific Tax_clint by id
 // @route   GET /api/v1/Tax_clint/:id
