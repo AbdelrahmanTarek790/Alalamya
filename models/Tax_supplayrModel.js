@@ -66,6 +66,7 @@ tax_supplayrSchema.pre('save', async function (next) {
     supplayr.price_pay += tax.netAmount;
     supplayr.price_on -= tax.netAmount;
     supplayr.total_price -= tax.netAmount;
+    supplayr.moneyOn_me -= tax.netAmount;
     supplayr.dis_count = (supplayr.dis_count || 0) + 1;
     await supplayr.save();
   }
