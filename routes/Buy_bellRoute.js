@@ -24,7 +24,7 @@ router
   .get(getBuy_bells)
   .post(
     authService.protect,
-    authService.allowedTo('admin','manager','user2'),
+    authService.allowedTo('admin','manager','bill_employee'),
     createBuy_bellValidator,
     createBuy_bell
   );
@@ -32,7 +32,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin','manager'),
+    authService.allowedTo('admin','manager','bill_employee'),
     getBuy_bellValidator, getBuy_bell)
   .put(
     authService.protect,

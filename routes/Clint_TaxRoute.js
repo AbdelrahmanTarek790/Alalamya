@@ -15,7 +15,8 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getTax_clints)
+  .get( authService.protect,
+        authService.allowedTo('admin', 'manager'),getTax_clints)
   .post(
     authService.protect,
     authService.allowedTo('admin', 'manager'),
@@ -27,7 +28,7 @@ router
   .get(getTax_clint)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateTax_clint
   )
   .delete(

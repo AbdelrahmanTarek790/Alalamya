@@ -24,8 +24,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getBuys)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),
+    getBuys)
   .post(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),
     createBuyValidator,
     createBuy
   );
