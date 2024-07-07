@@ -40,6 +40,10 @@ const tax_supplayrSchema = new mongoose.Schema(
       type: Number,
       
     },
+    Notes: {
+      type:String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
@@ -47,7 +51,7 @@ const tax_supplayrSchema = new mongoose.Schema(
 
 tax_supplayrSchema.pre(/^find/, function (next) {
     this.populate({ path: 'user', select: 'name -_id' })
-      .populate({ path: 'clint', select: 'clint_name money_pay money_on -_id' });
+      .populate({ path: 'clint', select: 'clint_name money_pay money_on dis_count _id' });
   
     next();
   });

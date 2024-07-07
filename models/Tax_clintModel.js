@@ -50,7 +50,7 @@ const taxSchema = new mongoose.Schema(
 
 taxSchema.pre(/^find/, function (next) {
     this.populate({ path: 'user', select: 'name -_id' })
-      .populate({ path: 'clint', select: 'clint_name money_pay money_on -_id' });
+      .populate({ path: 'clint', select: 'clint_name money_pay money_on disCount _id' });
   
     next();
   });
