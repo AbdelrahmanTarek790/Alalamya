@@ -4,8 +4,6 @@ const {
   createUserValidator,
   updateUserValidator,
   deleteUserValidator,
-  changeUserPasswordValidator,
-  updateLoggedUserValidator,
 } = require('../utils/validators/userValidator');
 
 const {
@@ -24,7 +22,7 @@ const router = express.Router();
 
 
 // Admin
-router.use(authService.protect,authService.allowedTo('admin', 'manager'));
+router.use(authService.protect,authService.allowedTo('admin'));
 
 router
   .route('/')

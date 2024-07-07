@@ -17,7 +17,7 @@ router
   .get(getSupplayrs)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     createSupplayr
   );
 
@@ -26,7 +26,7 @@ router
   .get(getSupplayr)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateSupplayr
   )
   .delete(

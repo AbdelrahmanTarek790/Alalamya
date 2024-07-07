@@ -26,10 +26,12 @@ router
 
 router
   .route('/:id')
-  .get(getTax_supplayr)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager'),getTax_supplayr)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateTax_supplayr
   )
   .delete(

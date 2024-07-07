@@ -15,16 +15,20 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getWarehouses)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),getWarehouses)
   .post(
     createWarehouse
   );
 router
   .route('/:id')
-  .get(getWarehouse)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),getWarehouse)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateWarehouse
   )
   .delete(
@@ -35,7 +39,6 @@ router
   router
   .route('/export/excel')
   .get(
-    
     printExcel
   );
 
