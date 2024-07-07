@@ -27,7 +27,7 @@ router
   .get(getSell_supplayr)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateSell_supplayr
   )
   .delete(

@@ -21,10 +21,11 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getSell_bells)
+  .get(authService.protect,
+       authService.allowedTo('admin','manager','bill_employee'),getSell_bells)
   .post(
     authService.protect,
-    authService.allowedTo('admin','manager','user2'),
+    authService.allowedTo('admin','manager','bill_employee'),
     createSell_bellValidator,
     createSell_bell
   );
@@ -32,7 +33,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin','manager','user2'),
+    authService.allowedTo('admin','manager','bill_employee'),
     getSell_bellValidator, getSell_bell)
   .put(
     authService.protect,

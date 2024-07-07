@@ -21,7 +21,8 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getBuy_bells)
+  .get(authService.protect,
+    authService.allowedTo('admin','manager','bill_employee'),getBuy_bells)
   .post(
     authService.protect,
     authService.allowedTo('admin','manager','bill_employee'),

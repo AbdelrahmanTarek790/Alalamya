@@ -15,7 +15,9 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getTax_supplayrs)
+  .get(
+    authService.protect,
+    authService.allowedTo('admin', 'manager'),getTax_supplayrs)
   .post(
     authService.protect,
     authService.allowedTo('admin', 'manager'),

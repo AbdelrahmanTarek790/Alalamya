@@ -21,17 +21,22 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getSells)
+  .get(
+       authService.protect,
+       authService.allowedTo('admin', 'manager','storage_employee'),getSells)
   .post(
+    authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),
     createSellValidator,
     createSell
   );
 router
   .route('/:id')
-  .get(getSellValidator, getSell)
+  .get(authService.protect,
+    authService.allowedTo('admin', 'manager','storage_employee'),getSellValidator, getSell)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateSellValidator,
     updateSell
   )
@@ -45,8 +50,8 @@ router
   router
   .route('/export/excel')
   .get(
-    /*authService.protect,
-    authService.allowedTo('admin', 'manager','user2'),*/
+    authService.protect,
+    authService.allowedTo('admin', 'manager','user2'),
     printExcel_Sell
   );
 
