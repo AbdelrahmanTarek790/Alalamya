@@ -45,35 +45,36 @@ Buy_bellSchema.pre(/^find/, function (next) {
   next();
 });
 
-Buy_bellSchema.statics.takeMoney_d = async function (supplayrId, amount) {
-  await Supplayr.findByIdAndUpdate(
-    supplayrId,
-    { $inc: { price_pay: +amount , price_on : -amount} },
+Buy_bellSchema.statics.takeMoney_d = async function (supplayrid, amount) {
+  const supplayr_ = await Supplayr.findById(supplayrid);
+  if (!supplayr_) {
+    throw new Error(`supplayrt with id ${supplayrid} not found`);
+  }
+  await Supplayr.findByIdAndUpdate(supplayrid,
+    { $inc: { price_pay: amount , price_on: -amount , moneyOn_me: -amount} },
     { new: true }
   );
 };
 
-Buy_bellSchema.statics.takeMoney_b = async function (supplayrId, amount) {
-  await Supplayr.findByIdAndUpdate(
-    supplayrId,
-    { $inc: { price_on: -amount, moneyOn_me: -amount } },
-    { new: true }
-  );
-};
+
 
 Buy_bellSchema.post('save', async function () {
   await this.constructor.takeMoney_d(this.supplayr, this.pay_bell);
-  await this.constructor.takeMoney_b(this.supplayr, this.pay_bell);
+  
 });
 
-Buy_bellSchema.pre('findOneAndUpdate', async function (next) {
-  const doc = await this.model.findOne(this.getQuery());
-  if (doc) {
-    await this.model.takeMoney_d(doc.supplayr, doc.pay_bell);
-    await this.model.takeMoney_b(doc.supplayr, doc.pay_bell);
-  }
-  next();
-});
+Buy_bellSchema.post('findOneAndUpdate', async function (doc) {
+      if (doc && doc.payBell !== undefined) {
+        const oldDocument = await this.model.findById(doc._id).exec();
+        if (oldDocument) {
+          const oldPayBell = oldDocument.pay_bell;
+          const newPayBell = doc.pay_bell;
+          await doc.constructor.takeMoney_d(doc.supplayr, newPayBell - oldPayBell);
+          
+        }
+      }
+    });
+ 
 
 const Buy_bell = mongoose.model('Buy_bell', Buy_bellSchema);
 

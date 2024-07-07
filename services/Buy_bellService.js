@@ -1,5 +1,7 @@
+
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
+const ApiFeatures = require('../utils/apiFeatures');
 const factory = require('./handlersFactory');
 const Buy_bell = require('../models/Buy_bellModel');
 
@@ -25,24 +27,38 @@ exports.createBuy_bell = factory.createOne(Buy_bell);
 // @route   PUT /api/v1/Buys/:id
 // @access  Private
 exports.updateBuy_bell =  asyncHandler(async (req, res, next) => {
-  const { id } = req.params;
+  const oldDocument = await Buy_bell.findById(req.params.id);
 
-  // Find the document by ID and update it with the request body
-  const updatedDocument = await Buy_bell.findByIdAndUpdate(id, req.body, {
-    new: true, // Return the updated document
-    runValidators: true, // Run validators to ensure the updated document is valid
-    context: 'query' // Ensure the `doc._update` object is available in hooks
-  });
-
-  // If no document found, return a 404 error
-  if (!updatedDocument) {
-    return next(new ApiError(`No document found for this ID: ${id}`, 404));
+  if (!oldDocument) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
   }
 
-  // Optionally, trigger post middleware actions here if needed
+  const payBellChanged = req.body.pay_bell !== undefined && req.body.pay_bell !== oldDocument.pay_bell;
+  
+  let oldPayBell = 0;
 
-  // Respond with the updated document in JSON format
-  res.status(200).json({ data: updatedDocument });
+  if (payBellChanged) {
+    oldPayBell = oldDocument.pay_bell;
+  }
+ 
+
+  const document = await Buy_bell.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+  }
+
+  if (payBellChanged) {
+    const newPayBell = req.body.pay_bell;
+    await document.constructor.takeMoney_d(document.supplayr,newPayBell - oldPayBell);
+  }
+
+
+
+  res.status(200).json({ data: document });
 });
 
 // @desc    Delete specific Buy_bell
