@@ -17,7 +17,7 @@ router
   .get(getSupplayrs)
   .post(
     authService.protect,
-    authService.allowedTo('admin'),
+    authService.allowedTo('admin','manager'),
     createSupplayr
   );
 
