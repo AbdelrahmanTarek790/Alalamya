@@ -51,7 +51,7 @@ const tax_supplayrSchema = new mongoose.Schema(
 
 tax_supplayrSchema.pre(/^find/, function (next) {
     this.populate({ path: 'user', select: 'name _id' })
-    .populate({ path: 'supplayr', select: 'supplayr_name price_pay price_on total_price dis_count _id ' });
+       .populate({ path: 'supplayr', select: 'supplayr_name price_on price_pay total_price _id' });
   
     next();
   });
@@ -60,8 +60,8 @@ tax_supplayrSchema.pre('save', async function (next) {
   const tax = this;
   
   // Calculate the tax and discount amounts
-  tax.taxAmount = tax.amount * (tax.taxRate / 100);
-  tax.discountAmount = tax.amount * (tax.discountRate / 100);
+  tax.taxAmount = Math.floor(tax.amount * (tax.taxRate / 100));
+  tax.discountAmount = Math.floor(tax.amount * (tax.discountRate / 100));
   tax.netAmount =  tax.taxAmount - tax.discountAmount;
   
   // Update the client's financials
@@ -77,6 +77,22 @@ tax_supplayrSchema.pre('save', async function (next) {
 
   next();
 });
+
+/*tax_supplayrSchema.post('findOneAndDelete', async function (doc, next) {
+  if (doc) {
+    // Reverse the financial changes
+    const supplayr = await Supplayr.findById(doc.supplayr);
+    if (supplayr) {
+      supplayr.price_pay -= doc.netAmount;
+      supplayr.price_on += doc.netAmount;
+      supplayr.total_price += doc.netAmount;
+      supplayr.moneyOn_me += doc.netAmount;
+      supplayr.dis_count = (supplayr.dis_count || 0) - 1;
+      await supplayr.save();
+    }
+  }
+  next();
+});*/
 
 const Tax_supplayr = mongoose.model('Tax_supplayr', tax_supplayrSchema);
 

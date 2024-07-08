@@ -38,7 +38,6 @@ const taxSchema = new mongoose.Schema(
       type: Number,
       
     },
-    
      Notes: {
       type:String,
       trim: true,
@@ -49,8 +48,8 @@ const taxSchema = new mongoose.Schema(
 
 
 taxSchema.pre(/^find/, function (next) {
-    this.populate({ path: 'user', select: 'name -_id' })
-        .populate({ path: 'clint', select: 'clint_name money_pay money_on disCount _id' });
+    this.populate({ path: 'user', select: 'name _id' })
+      .populate({ path: 'clint', select: 'clint_name money_pay money_on _id' });
   
     next();
   });
@@ -61,13 +60,13 @@ taxSchema.pre('save', async function (next) {
   // Calculate the tax and discount amounts
   tax.taxAmount = tax.amount * (tax.taxRate / 100);
   tax.discountAmount = tax.amount * (tax.discountRate / 100);
-  tax.netAmount =  tax.taxAmount - tax.discountAmount;
+  tax.netAmount =  tax.taxAmount + tax.discountAmount;
   
   // Update the client's financials
   const clint = await Clint.findById(tax.clint);
   if (clint) {
     clint.money_pay += tax.discountAmount;
-    clint.money_on += tax.netAmount;
+    clint.money_on += tax.taxAmount;
     clint.total_monye += tax.netAmount;
     clint.disCount = (clint.disCount || 0) + 1;
     await clint.save();
@@ -75,6 +74,24 @@ taxSchema.pre('save', async function (next) {
 
   next();
 });
+
+
+
+
+/*taxSchema.post('findOneAndDelete', async function (doc, next) {
+    if (doc) {
+      // Reverse the financial changes
+      const clint = await Clint.findById(doc.clint);
+    if (clint) {
+      clint.money_pay -= oldDoc.discountAmount;
+      clint.money_on -= oldDoc.netAmount;
+      clint.total_monye -= oldDoc.netAmount;
+      clint.disCount = (clint.disCount || 0) - 1;
+      await clint.save();
+    }
+  }
+  next();
+});*/
 
 const Tax_clint = mongoose.model('Tax', taxSchema);
 

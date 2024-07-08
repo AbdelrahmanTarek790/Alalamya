@@ -4,6 +4,7 @@ const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
 const factory = require('./handlersFactory');
 const Buy_bell = require('../models/Buy_bellModel');
+const Supplayr =require('../models/SupplayrModel');
 
 
 
@@ -64,9 +65,29 @@ exports.updateBuy_bell =  asyncHandler(async (req, res, next) => {
 // @desc    Delete specific Buy_bell
 // @route   DELETE /api/v1/Buys/:id
 // @access  Private
-exports.deleteBuy_bell = factory.deleteOne(Buy_bell);
+exports.deleteBuy_bell = asyncHandler(async (req, res, next) => {
+  const oldDocument = await Buy_bell.findById(req.params.id);
 
+  if (!oldDocument) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+  const supplayr = await Supplayr.findById(oldDocument.supplayr);
+  if (supplayr) {
+    supplayr.price_pay -= oldDocument.pay_bell;
+    supplayr.price_on += oldDocument.pay_bell;
+    await supplayr.save();
+}
+  
+  const document = await Buy_bell.findByIdAndDelete(req.params.id);
 
+    if (!document) {
+      return next(
+        new ApiError(`No document for this id ${req.params.id}`, 404)
+      );
+    }
 
+    
+    res.status(204).json({ data: null });
+  });
 
 
