@@ -69,7 +69,7 @@ SellSchema.statics.removeFromWarehouse = async function (product_code) {
   await Warehouse.deleteOne({ product_code });
 };
 
-SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
+/*SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
   const result2 = await this.aggregate([
     {
       $match: { clint: clintId },
@@ -89,35 +89,40 @@ SellSchema.statics.AddmoneyAndtakeMoneyS = async function (clintId) {
       total_monye: result2[0].totalMonye,
     });
   }
-};
+};*/
 
-SellSchema.statics.takeMoney_ds = async function (clintId, monyeall) {
+SellSchema.statics.takeMoney_ds = async function (clintId, monyeall,monyePay) {
+  const mOnn = monyeall - monyePay ;
   await Clint.findByIdAndUpdate(clintId, {
-    $inc: { money_on: +monyeall },
+    $inc: { money_on: + mOnn , money_pay: +monyePay ,total_monye: +monyeall},
   });
 };
 
-SellSchema.statics.takeMoney_bs = async function (clintId, monyePay) {
-  await Clint.findByIdAndUpdate(clintId, {
-    $inc: { money_on: -monyePay },
-  });
-};
+
 
 SellSchema.post('save', async function () {
   await this.constructor.updateProductWeightS(this.product, this.o_wieght);
   await this.constructor.removeFromWarehouse(this.product_code);
-  await this.constructor.AddmoneyAndtakeMoneyS(this.clint);
-  await this.constructor.takeMoney_ds(this.clint, this.price_allQuantity);
-  await this.constructor.takeMoney_bs(this.clint, this.pay_now);
+  await this.constructor.takeMoney_ds(this.clint, this.price_allQuantity,this.pay_now);
 });
 
 // تعديل بحيث لا يتم أي تغيير في المخزن عند استخدام update
 SellSchema.post('findOneAndUpdate', async function (doc) {
-  if (doc) {
-    // لا تقم بتحديث الوزن في المخزن عند التعديل
-    await doc.constructor.AddmoneyAndtakeMoneyS(doc.clint);
-    await doc.constructor.takeMoney_ds(doc.clint, doc.price_allQuantity);
-    await doc.constructor.takeMoney_bs(doc.clint, doc.pay_now);
+  if (doc && doc.pay_now !== undefined) {
+    const oldDocument = await this.model.findById(doc._id).exec();
+    if (oldDocument) {
+      const oldPayBell = oldDocument.pay_now;
+      const newPayBell = doc.pay_now;
+      await doc.constructor.takeMoney_ds(doc.clint,0 ,newPayBell - oldPayBell);
+    }
+  }
+  if (doc && doc.price_allQuantity !== undefined) {
+    const oldDocument = await this.model.findById(doc._id).exec();
+    if (oldDocument) {
+      const oldPayBell2 = oldDocument.price_allQuantity;
+      const newPayBell2 = doc.price_allQuantity;
+      await doc.constructor.takeMoney_ds(doc.clint,newPayBell2 - oldPayBell2,0);
+    }
   }
 });
 

@@ -12,7 +12,7 @@ const Sell = require('../models/sellModel');
 // @desc    Get list of Sell
 // @route   GET /api/v1/Sells
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Sell');
+exports.getSells = factory.getAll(Sell,'Product');
 
 // @desc    Get specific Sell by id
 // @route   GET /api/v1/Sells/:id
@@ -27,7 +27,28 @@ exports.createSell = factory.createOne(Sell);
 // @route   PUT /api/v1/Sells/:id
 // @access  Private
 exports.updateSell =  asyncHandler(async (req, res, next) => {
-  const document = await Sell.findByIdAndUpdate(req.params.id, req.body, {
+     
+  const oldDocument = await Sell.findById(req.params.id);
+
+  if (!oldDocument) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+
+  const payBellChanged = req.body.pay_now !== undefined && req.body.pay_now !== oldDocument.pay_now;
+  let oldPayBell = 0;
+
+  if (payBellChanged) {
+    oldPayBell = oldDocument.pay_now;
+  }
+
+  const payBellChanged1 = req.body.price_allQuantity !== undefined && req.body.price_allQuantity !== oldDocument.price_allQuantity;
+  let oldPayBell1 = 0;
+
+  if (payBellChanged1) {
+    oldPayBell1 = oldDocument.price_allQuantity;
+  }
+
+  const document = await Sell.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true,
     runValidators: true,
   });
@@ -35,20 +56,49 @@ exports.updateSell =  asyncHandler(async (req, res, next) => {
   if (!document) {
     return next(new ApiError(`No document for this id ${req.params.id}`, 404));
   }
-
+   
+  if (payBellChanged) {
+    neWbell = req.body.pay_now;
+     await document.constructor.takeMoney_ds(document.clint,0, neWbell- oldPayBell);
   
-  await document.constructor.AddmoneyAndtakeMoneyS(document.clint);
-  await document.constructor.takeMoney_ds(document.clint, document.price_allQuantity);
-  await document.constructor.takeMoney_bs(document.clint, document.pay_now);
-
-  // لا تقم بتفعيل عملية الحفظ مرة أخرى لتجنب تفعيل post('save')
-
+    }
+   
+    if (payBellChanged1) {
+      newbell = req.body.price_allQuantity;
+      await document.constructor.takeMoney_ds(document.clint,newbell - oldPayBell1,0);
+       
+    }
+      
   res.status(200).json({ data: document });
 });
 // @desc    Delete specific Sell
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private
-exports.deleteSell = factory.deleteOne(Sell);
+exports.deleteSell = asyncHandler(async (req, res, next) => {
+  const oldDocument1 = await Sell_bell.findById(req.params.id);
+
+  if (!oldDocument1) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+  const clint = await Clint.findById(oldDocument1.clint);
+  if (clint) {
+    clint.money_pay -= oldDocument1.pay_now;
+    clint.money_on -= (oldDocument1.price_allQuantity - oldDocument1.pay_now);
+    clint.total_monye -= oldDocument1.price_allQuantity;
+    await clint.save();
+}
+  
+  const document = await Sell_bell.findByIdAndDelete(req.params.id);
+
+    if (!document) {
+      return next(
+        new ApiError(`No document for this id ${req.params.id}`, 404)
+      );
+    }
+
+    
+    res.status(204).json({ data: null });
+  });
 
 exports.printExcel_Sell =  asyncHandler(async (req, res) => {
     let filter = {};

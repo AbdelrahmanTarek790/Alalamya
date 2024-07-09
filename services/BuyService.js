@@ -1,6 +1,7 @@
 
 const asyncHandler = require('express-async-handler');
 const ApiFeatures = require('../utils/apiFeatures');
+const ApiError = require('../utils/apiError');
 const XLSX = require('xlsx');
 const factory = require('./handlersFactory');
 const Buy = require('../models/BuyModel');
@@ -29,26 +30,80 @@ exports.createBuy = factory.createOne(Buy);
 // @route   PUT /api/v1/Buys/:id
 // @access  Private
 exports.updateBuy =  asyncHandler(async (req, res, next) => {
-  const document = await Buy.findOneAndUpdate({ _id: req.params.id }, req.body, {
-    new: true,
-    runValidators: true,
+     
+    const oldDocument = await Buy.findById(req.params.id);
+  
+    if (!oldDocument) {
+      return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+    }
+  
+    const payBellChanged = req.body.pay !== undefined && req.body.pay !== oldDocument.pay;
+    let oldPayBell = 0;
+  
+    if (payBellChanged) {
+      oldPayBell = oldDocument.pay;
+    }
+  
+    const payBellChanged1 = req.body.price_all !== undefined && req.body.price_all !== oldDocument.price_all;
+    let oldPayBell1 = 0;
+  
+    if (payBellChanged1) {
+      oldPayBell1 = oldDocument.price_all;
+    }
+  
+    const document = await Buy.findOneAndUpdate({ _id: req.params.id }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!document) {
+      return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+    }
+     
+    if (payBellChanged) {
+      neWbell = req.body.pay;
+       await document.constructor.takeMoney_d(document.supplayr,0, neWbell- oldPayBell);
+       await document.constructor.allcalc_d(document.supplayr,0, neWbell- oldPayBell);
+      }
+     
+      if (payBellChanged1) {
+        newbell = req.body.price_all;
+        await document.constructor.takeMoney_d(document.supplayr,newbell - oldPayBell1,0);
+         await document.constructor.allcalc_d(document.supplayr,newbell - oldPayBell1,0);
+      }
+        
+    res.status(200).json({ data: document });
   });
 
-  if (!document) {
-    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
-  }
 
-  // Trigger "post" middleware
-  await document.constructor.updateWarehouse(document.user, document.product, document.product_code, document.E_wieght, document.size);
-  await document.constructor.calcAveragePrice(document.product);
-  await document.constructor.updateProductWeight(document.product, document.E_wieght);
-
-  res.status(200).json({ data: document });
-});
 // @desc    Delete specific Buy
 // @route   DELETE /api/v1/Buys/:id
 // @access  Private
-exports.deleteBuy = factory.deleteOne(Buy);
+exports.deleteBuy = asyncHandler(async (req, res, next) => {
+  const oldDocument2 = await Buy.findById(req.params.id);
+
+  if (!oldDocument2) {
+    return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
+  }
+  const supplayr = await Supplayr.findById(oldDocument2.supplayr);
+  if (supplayr) {
+    supplayr.price_pay -= oldDocument2.pay;
+    supplayr.price_on -= (oldDocument2.price_all - oldDocument2.pay_bell);
+    supplayr.total_price -= oldDocument2.price_all;
+    await supplayr.save();
+}
+  
+  const document = await Buy.findByIdAndDelete(req.params.id);
+
+    if (!document) {
+      return next(
+        new ApiError(`No document for this id ${req.params.id}`, 404)
+      );
+    }
+
+    
+    res.status(204).json({ data: null });
+  });
 
 
 
