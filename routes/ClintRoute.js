@@ -7,6 +7,7 @@ const {
   createClint,
   updateClint,
   deleteClint,
+  getClientDetails,
 } = require('../services/ClintService');
 
 const authService = require('../services/authService');
@@ -27,7 +28,7 @@ router
   .get(getClint)
   .put(
     authService.protect,
-    authService.allowedTo('admin'),
+    authService.allowedTo('admin', 'manager'),
     updateClint
   )
   .delete(
@@ -35,5 +36,10 @@ router
     authService.allowedTo('admin'),
     deleteClint
   );
+router
+  .route('/:clientId/details') 
+  .get(
+    authService.protect,
+    authService.allowedTo('admin'),getClientDetails); 
 
 module.exports = router;
