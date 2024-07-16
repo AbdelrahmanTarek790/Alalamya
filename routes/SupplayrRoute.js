@@ -6,6 +6,7 @@ const {
   createSupplayr,
   updateSupplayr,
   deleteSupplayr,
+  getSupplayrDetails,
 } = require('../services/SupplayrService');
 
 const authService = require('../services/authService');
@@ -17,7 +18,7 @@ router
   .get(getSupplayrs)
   .post(
     authService.protect,
-    authService.allowedTo('admin','manager'),
+    authService.allowedTo('admin'),
     createSupplayr
   );
 
@@ -34,5 +35,10 @@ router
     authService.allowedTo('admin'),
     deleteSupplayr
   );
+  router
+  .route('/:supplayrId/details') 
+  .get(
+    authService.protect,
+    authService.allowedTo('admin'),getSupplayrDetails);
 
 module.exports = router;
