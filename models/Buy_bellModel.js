@@ -23,6 +23,12 @@ const Buy_bellSchema = new mongoose.Schema(
       enum: ['cash', 'check'],
       required: true,
     },
+    bank_name: {
+      type: String,
+      required: function () {
+        return this.paymentMethod === 'check';
+      },
+    },
     check_number: {
       type: String,
       required: function () {
