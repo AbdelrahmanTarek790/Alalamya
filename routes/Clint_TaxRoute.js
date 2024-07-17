@@ -16,10 +16,10 @@ const router = express.Router();
 router
   .route('/')
   .get( authService.protect,
-        authService.allowedTo('admin', 'manager'),getTax_clints)
+        authService.allowedTo('admin'),getTax_clints)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     createTax_clint
   );
 
@@ -27,7 +27,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),getTax_clint)
+    authService.allowedTo('admin'),getTax_clint)
   .put(
     authService.protect,
     authService.allowedTo('admin'),
