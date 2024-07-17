@@ -17,17 +17,17 @@ router
   .route('/')
   .get(
        authService.protect,
-       authService.allowedTo('admin', 'manager'),getReturns)
+       authService.allowedTo('admin'),getReturns)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     createReturn
   );
 
 router
   .route('/:id')
   .get(authService.protect,
-    authService.allowedTo('admin', 'manager'),getReturn)
+    authService.allowedTo('admin'),getReturn)
   .put(
     authService.protect,
     authService.allowedTo('admin'),
