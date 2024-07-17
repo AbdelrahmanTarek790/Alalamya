@@ -22,10 +22,10 @@ const router = express.Router();
 router
   .route('/')
   .get(authService.protect,
-    authService.allowedTo('admin','manager','bill_employee'),getBuy_bells)
+    authService.allowedTo('admin','bill_employee'),getBuy_bells)
   .post(
     authService.protect,
-    authService.allowedTo('admin','manager','bill_employee'),
+    authService.allowedTo('admin','bill_employee'),
     createBuy_bellValidator,
     createBuy_bell
   );
@@ -33,7 +33,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin','manager','bill_employee'),
+    authService.allowedTo('admin','bill_employee'),
     getBuy_bellValidator, getBuy_bell)
   .put(
     authService.protect,
