@@ -23,17 +23,17 @@ router
   .route('/')
   .get(
        authService.protect,
-       authService.allowedTo('admin', 'manager','storage_employee'),getSells)
+       authService.allowedTo('admin','storage_employee'),getSells)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager','storage_employee'),
+    authService.allowedTo('admin','storage_employee'),
     createSellValidator,
     createSell
   );
 router
   .route('/:id')
   .get(authService.protect,
-    authService.allowedTo('admin', 'manager','storage_employee'),getSellValidator, getSell)
+    authService.allowedTo('admin', 'storage_employee'),getSellValidator, getSell)
   .put(
     authService.protect,
     authService.allowedTo('admin'),
