@@ -70,7 +70,9 @@ taxSchema.pre('save', async function (next) {
     clint.money_pay += tax.discountAmount;
     clint.money_on += tax.taxAmount;
     clint.total_monye += tax.netAmount;
+    if(clint.disCount != 0){
     clint.disCount = (clint.disCount || 0) + 1;
+    }
     await clint.save();
   }
 
