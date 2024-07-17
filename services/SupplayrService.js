@@ -1,3 +1,4 @@
+const mongoose = require('mongoose'); 
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const factory = require('./handlersFactory');
@@ -56,9 +57,12 @@ exports.getSupplayrDetails = asyncHandler(async (req, res, next) => {
     res.status(200).json({ buys , bell ,tax });
   });
   
-
-  exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
+exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
   const { supplayrId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(supplayrId)) {
+    return next(new ApiError('Invalid supplier ID', 400));
+  }
 
   // Get all sales for the supplayr
   const bell = await Buy_bell.find({ supplayr: supplayrId })
@@ -72,14 +76,12 @@ exports.getSupplayrDetails = asyncHandler(async (req, res, next) => {
     .populate({ path: 'supplayr', select: 'supplayr_name' });
 
   if (!bell.length && !buys.length && !tax.length) {
-    return next(new ApiError(`No transactions found for client with ID: ${supplayrId}`, 404));
+    return next(new ApiError(`No transactions found for supplier with ID: ${supplayrId}`, 404));
   }
-
-  const supplayrName = bell[0]?.supplayr?.supplayr_name || buys[0]?.supplayr?.supplayr_name || tax[0]?.supplayr?.supplayr_name || 'Unknown';
 
   const workbook = new ExcelJS.Workbook();
   const buysheet = workbook.addWorksheet('مشتريات');
-  const bellsheet = workbook.addWorksheet('فوتير');
+  const bellsheet = workbook.addWorksheet('فواتير');
   const taxSheet = workbook.addWorksheet('الضريبة');
 
   // Add columns for buys sheet
@@ -147,10 +149,12 @@ exports.getSupplayrDetails = asyncHandler(async (req, res, next) => {
 
   // Set response headers
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', `attachment; filename=client_${supplayrName}_details.xlsx`);
+  res.setHeader('Content-Disposition', `attachment; filename=supplier_${supplayrId}_details.xlsx`);
 
   // Write to response
   await workbook.xlsx.write(res);
 
   res.end();
 });
+
+
