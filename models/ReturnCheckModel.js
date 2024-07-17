@@ -3,14 +3,15 @@ const Clint = require('./ClintModel');
 
 const ReturnedCheckSchema = new mongoose.Schema(
   {
+
+   user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     clint: {
       type: mongoose.Schema.ObjectId,
       ref: 'Clint',
-      required: true,
-    },
-     user: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
       required: true,
     },
     amount: {
