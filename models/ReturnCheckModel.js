@@ -8,31 +8,39 @@ const ReturnedCheckSchema = new mongoose.Schema(
       ref: 'Clint',
       required: true,
     },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Clint',
+      required: true,
+    },
     amount: {
       type: Number,
       required: true,
     },
+     num:{
+       type:Number,
+     },
     date: {
       type: Date,
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true } 
 );
+ReturnedCheckSchema.pre(/^find/, function (next) {
+  this.populate({ path: 'user', select: 'name -_id' })
+      .populate({ path: 'clint', select: 'clint_name money_pay money_on _id' });
+
+  next();
+});
+const mount = this.amount;
 
 ReturnedCheckSchema.post('save', async function () {
-  const amount = this.amount;
+  await Clint.findByIdAndUpdate(this.clint, {
+    $inc: { money_pay: -mount },
+    $inc: { money_on: +mount },
 
-  // التحقق من أن المبلغ هو رقم صالح
-  if (!isNaN(amount)) {
-    // تحديث حقول العميل
-    const clintId = this.clint;
-    await Clint.findByIdAndUpdate(clintId, {
-      $inc: { money_pay: -amount, money_on: amount }
-    });
-  } else {
-    console.error('Invalid amount value:', amount);
-  }
+  });
 });
 
 const ReturnedCheck = mongoose.model('ReturnedCheck', ReturnedCheckSchema);
