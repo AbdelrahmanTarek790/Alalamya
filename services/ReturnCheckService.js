@@ -5,7 +5,7 @@ const ApiError = require('../utils/apiError');
 
 // إنشاء شيك مرتجع
 exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
-  const { clint, amount } = req.body;
+  const { clint, amount ,user} = req.body;
 
   // تحقق من وجود العميل باستخدام المعرف
   const clint_ = await Clint.findById(clint);
@@ -19,13 +19,13 @@ exports.createReturnedCheck = asyncHandler(async (req, res, next) => {
   }
 
   // إنشاء الشيك المرتجع
-  const returnedCheck = await ReturnedCheck.create({ clint, amount });
+  const returnedCheck = await ReturnedCheck.create({ clint, amount ,user});
 
   res.status(201).json({ data: returnedCheck });
 });
 
 // الحصول على جميع الشيكات المرتجعة
 exports.getAllReturnedChecks = asyncHandler(async (req, res) => {
-  const returnedChecks = await ReturnedCheck.find().populate('clint');
+  const returnedChecks = await ReturnedCheck.find().populate('clint').populate('user');
   res.status(200).json({ results: returnedChecks.length, data: returnedChecks });
 });
