@@ -20,12 +20,10 @@ const taxSchema = new mongoose.Schema(
     },
     taxRate: {
       type: Number,
-      required: true,
       default:0,
     },
     discountRate: {
       type: Number,
-      required: true,
       default:0,
     },
     netAmount: {
