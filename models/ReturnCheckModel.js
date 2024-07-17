@@ -8,9 +8,9 @@ const ReturnedCheckSchema = new mongoose.Schema(
       ref: 'Clint',
       required: true,
     },
-    user: {
+     user: {
       type: mongoose.Schema.ObjectId,
-      ref: 'Clint',
+      ref: 'User',
       required: true,
     },
     amount: {
