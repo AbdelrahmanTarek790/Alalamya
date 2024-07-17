@@ -149,7 +149,7 @@ exports.getSupplayrDetails = asyncHandler(async (req, res, next) => {
     
     // Set response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=client_${clientId}_details.xlsx`);
+    res.setHeader('Content-Disposition', `attachment; filename=client_${supplayr_name}_details.xlsx`);
   
     // Write to response
     await workbook.xlsx.write(res);
