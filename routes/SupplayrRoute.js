@@ -7,6 +7,7 @@ const {
   updateSupplayr,
   deleteSupplayr,
   getSupplayrDetails,
+  exportSupplayrDetailsToExcel,
 } = require('../services/SupplayrService');
 
 const authService = require('../services/authService');
@@ -41,4 +42,7 @@ router
     authService.protect,
     authService.allowedTo('admin'),getSupplayrDetails);
 
+  router
+  .route('/:supplayrId/details/export')
+  .get(exportSupplayrDetailsToExcel);
 module.exports = router;
