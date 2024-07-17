@@ -8,6 +8,7 @@ const {
   updateClint,
   deleteClint,
   getClientDetails,
+  exportClientDetailsToExcel,
 } = require('../services/ClintService');
 
 const authService = require('../services/authService');
@@ -41,5 +42,8 @@ router
   .get(
     authService.protect,
     authService.allowedTo('admin'),getClientDetails); 
+    router
+  .route('/:clientId/details/export')
+  .get(exportClientDetailsToExcel);
 
 module.exports = router;
