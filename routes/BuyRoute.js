@@ -26,11 +26,11 @@ router
   .route('/')
   .get(
     authService.protect,
-    authService.allowedTo('admin', 'manager','storage_employee'),
+    authService.allowedTo('admin','storage_employee'),
     getBuys)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager','storage_employee'),
+    authService.allowedTo('admin','storage_employee'),
     createBuyValidator,
     createBuy
   );
@@ -38,7 +38,7 @@ router
   .route('/:id')
   .get(
     authService.protect,
-    authService.allowedTo('admin', 'manager','storage_employee'),getBuyValidator,getBuy)
+    authService.allowedTo('admin', 'storage_employee'),getBuyValidator,getBuy)
   .put(
     authService.protect,
     authService.allowedTo('admin'),
