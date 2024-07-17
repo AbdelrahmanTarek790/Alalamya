@@ -34,15 +34,7 @@ ReturnedCheckSchema.pre(/^find/, function (next) {
 
   next();
 });
-const mount = this.amount;
 
-ReturnedCheckSchema.post('save', async function () {
-  await Clint.findByIdAndUpdate(this.clint, {
-    $inc: { money_pay: -mount },
-    $inc: { money_on: +mount },
-
-  });
-});
 
 const ReturnedCheck = mongoose.model('ReturnedCheck', ReturnedCheckSchema);
 
