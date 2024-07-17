@@ -42,7 +42,7 @@ router
     authService.protect,
     authService.allowedTo('admin'),getSupplayrDetails);
 
-  router
-  .route('/:supplayrId/details/export')
+ router
+  .route('/:supplayrId/exportToExcel')
   .get(exportSupplayrDetailsToExcel);
 module.exports = router;
