@@ -20,7 +20,7 @@ router
   .get(getClints)
   .post(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     createClint
   );
 
@@ -29,7 +29,7 @@ router
   .get(getClint)
   .put(
     authService.protect,
-    authService.allowedTo('admin', 'manager'),
+    authService.allowedTo('admin'),
     updateClint
   )
   .delete(
