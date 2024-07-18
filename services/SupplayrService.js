@@ -80,7 +80,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
   const worksheet = workbook.addWorksheet('Supplier Details');
 
   // Add header for buys section
-  const buysHeader = worksheet.addRow(['مشتريات']);
+  const buysHeader = worksheet.addRow(['']);
   buysHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
   buysHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
 
@@ -100,11 +100,22 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
     ]);
   });
 
+  // Set column widths for buys section
+  worksheet.columns = [
+    { key: 'supplayr', width: 25 },
+    { key: 'product', width: 20 },
+    { key: 'E_wieght', width: 20 },
+    { key: 'size', width: 15 },
+    { key: 'price_all', width: 20 },
+    { key: 'pay', width: 20 },
+    { key: 'createdAt', width: 25 },
+  ];
+
   // Add an empty row to separate sections
   worksheet.addRow([]);
 
   // Add header for bell section
-  const bellHeader = worksheet.addRow(['فواتير']);
+  const bellHeader = worksheet.addRow(['']);
   bellHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
   bellHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
 
@@ -123,11 +134,21 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
     ]);
   });
 
+  // Set column widths for bell section
+  worksheet.columns = [
+    { key: 'supplayr', width: 25 },
+    { key: 'pay_bell', width: 20 },
+    { key: 'payment_method', width: 20 },
+    { key: 'check_number', width: 20 },
+    { key: 'check_date', width: 20 },
+    { key: 'createdAt', width: 25 },
+  ];
+
   // Add an empty row to separate sections
   worksheet.addRow([]);
 
   // Add header for tax section
-  const taxHeader = worksheet.addRow(['الضريبة']);
+  const taxHeader = worksheet.addRow(['']);
   taxHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
   taxHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
 
@@ -144,6 +165,15 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
       t.createdAt.toLocaleString(),
     ]);
   });
+
+  // Set column widths for tax section
+  worksheet.columns = [
+    { key: 'supplayr', width: 25 },
+    { key: 'amount', width: 20 },
+    { key: 'discountRate', width: 20 },
+    { key: 'taxRate', width: 20 },
+    { key: 'createdAt', width: 25 },
+  ];
 
   // Set response headers
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
