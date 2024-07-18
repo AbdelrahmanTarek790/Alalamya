@@ -102,13 +102,13 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for buys section
   worksheet.columns = [
-    { key: 'supplayr', width: 25 },
+    { key: 'supplayr', width: 30 },
     { key: 'product', width: 20 },
     { key: 'E_wieght', width: 20 },
     { key: 'size', width: 15 },
     { key: 'price_all', width: 20 },
     { key: 'pay', width: 20 },
-    { key: 'createdAt', width: 25 },
+    { key: 'createdAt', width: 30 },
   ];
 
   // Add an empty row to separate sections
@@ -137,13 +137,13 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for bell section
   worksheet.columns = [
-    { key: 'supplayr', width: 25 },
+    { key: 'supplayr', width: 30 },
     { key: 'pay_bell', width: 20 },
     { key: 'payment_method', width: 20 },
     { key: 'check_number', width: 20 },
     { key: 'check_date', width: 20 },
     { key: 'bank_name', width: 20 },
-    { key: 'createdAt', width: 25 },
+    { key: 'createdAt', width: 30 },
   ];
 
   // Add an empty row to separate sections
@@ -170,11 +170,11 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for tax section
   worksheet.columns = [
-    { key: 'supplayr', width: 25 },
+    { key: 'supplayr', width: 30 },
     { key: 'amount', width: 20 },
     { key: 'discountRate', width: 20 },
     { key: 'taxRate', width: 20 },
-    { key: 'createdAt', width: 25 },
+    { key: 'createdAt', width: 30 },
   ];
 
   // Set response headers
