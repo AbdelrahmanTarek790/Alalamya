@@ -102,7 +102,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for buys section
   worksheet.columns = [
-    { key: 'supplayr', width: 30 },
+    { key: 'supplayr', width: 40 },
     { key: 'product', width: 20 },
     { key: 'E_wieght', width: 20 },
     { key: 'size', width: 15 },
@@ -137,7 +137,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for bell section
   worksheet.columns = [
-    { key: 'supplayr', width: 30 },
+    { key: 'supplayr', width: 40 },
     { key: 'pay_bell', width: 20 },
     { key: 'payment_method', width: 20 },
     { key: 'check_number', width: 20 },
@@ -170,7 +170,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths for tax section
   worksheet.columns = [
-    { key: 'supplayr', width: 30 },
+    { key: 'supplayr', width: 40 },
     { key: 'amount', width: 20 },
     { key: 'discountRate', width: 20 },
     { key: 'taxRate', width: 20 },
