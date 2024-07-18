@@ -60,7 +60,7 @@ taxSchema.pre('save', async function (next) {
   // Calculate the tax and discount amounts
   tax.taxAmount = tax.amount * (tax.taxRate / 100);
   tax.discountAmount = tax.amount * (tax.discountRate / 100);
-  tax.netAmount =  tax.taxAmount + tax.discountAmount;
+  tax.netAmount =  tax.taxAmount - tax.discountAmount;
   
   // Update the client's financials
   const clint = await Clint.findById(tax.clint);
