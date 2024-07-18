@@ -79,68 +79,70 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Supplier Details');
 
-  // Add columns for the combined sheet
-  worksheet.columns = [
-    { header: 'المورد', key: 'supplayr', width: 20 },
-    { header: 'نوع البيانات', key: 'data_type', width: 15 },
-    { header: 'النوع', key: 'product', width: 15 },
-    { header: 'وزن البكرة', key: 'E_wieght', width: 15 },
-    { header: 'مقاس', key: 'size', width: 15 },
-    { header: 'سعر', key: 'price_all', width: 15 },
-    { header: 'المدفوع', key: 'pay', width: 15 },
-    { header: 'مبلغ الفاتورة', key: 'pay_bell', width: 15 },
-    { header: 'طريقة الدفع', key: 'payment_method', width: 15 },
-    { header: 'رقم الشيك', key: 'check_number', width: 15 },
-    { header: 'تاريخ الشيك', key: 'check_date', width: 15 },
-    { header: 'مبلغ الضريبة', key: 'amount', width: 15 },
-    { header: 'نسبة خصم', key: 'discountRate', width: 15 },
-    { header: 'الضريبة', key: 'taxRate', width: 15 },
-    { header: 'تاريخ الإنشاء', key: 'createdAt', width: 20 },
-  ];
+  // Add header for buys section
+  const buysHeader = worksheet.addRow(['مشتريات']);
+  buysHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  buysHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
 
-  // Add rows for buys
+  // Add columns for buys section
+  worksheet.addRow([
+    'المورد', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء'
+  ]);
   buys.forEach(by => {
-    worksheet.addRow({
-      supplayr: by.supplayr.supplayr_name,
-      data_type: 'مشتريات',
-      product: by.product.type,
-      E_wieght: by.E_wieght,
-      size: by.size,
-      price_all: by.price_all,
-      pay: by.pay,
-      createdAt: by.createdAt.toLocaleString(),
-    });
+    worksheet.addRow([
+      by.supplayr.supplayr_name,
+      by.product.type,
+      by.E_wieght,
+      by.size,
+      by.price_all,
+      by.pay,
+      by.createdAt.toLocaleString(),
+    ]);
   });
 
   // Add an empty row to separate sections
-  worksheet.addRow({});
+  worksheet.addRow([]);
 
-  // Add rows for bell
+  // Add header for bell section
+  const bellHeader = worksheet.addRow(['فواتير']);
+  bellHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  bellHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
+
+  // Add columns for bell section
+  worksheet.addRow([
+    'المورد', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء'
+  ]);
   bell.forEach(bay => {
-    worksheet.addRow({
-      supplayr: bay.supplayr.supplayr_name,
-      data_type: 'فواتير',
-      pay_bell: bay.pay_bell,
-      payment_method: bay.payment_method,
-      check_number: bay.check_number,
-      check_date: bay.check_date,
-      createdAt: bay.createdAt.toLocaleString(),
-    });
+    worksheet.addRow([
+      bay.supplayr.supplayr_name,
+      bay.pay_bell,
+      bay.payment_method,
+      bay.check_number,
+      bay.check_date,
+      bay.createdAt.toLocaleString(),
+    ]);
   });
 
   // Add an empty row to separate sections
-  worksheet.addRow({});
+  worksheet.addRow([]);
 
-  // Add rows for tax
+  // Add header for tax section
+  const taxHeader = worksheet.addRow(['الضريبة']);
+  taxHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  taxHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
+
+  // Add columns for tax section
+  worksheet.addRow([
+    'المورد', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء'
+  ]);
   tax.forEach(t => {
-    worksheet.addRow({
-      supplayr: t.supplayr.supplayr_name,
-      data_type: 'الضريبة',
-      amount: t.amount,
-      discountRate: t.discountRate,
-      taxRate: t.taxRate,
-      createdAt: t.createdAt.toLocaleString(),
-    });
+    worksheet.addRow([
+      t.supplayr.supplayr_name,
+      t.amount,
+      t.discountRate,
+      t.taxRate,
+      t.createdAt.toLocaleString(),
+    ]);
   });
 
   // Set response headers
