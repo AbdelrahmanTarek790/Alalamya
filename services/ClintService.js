@@ -1,16 +1,13 @@
-const mongoose = require('mongoose'); 
+const mongoose = require('mongoose');
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const ExcelJS = require('exceljs');
 const factory = require('./handlersFactory');
 const Clint = require('../models/ClintModel');
-const Sell =require('../models/sellModel');
+const Sell = require('../models/sellModel');
 const Sell_bell = require('../models/Sell_bellModel');
 const clint_tax = require('../models/Tax_clintModel');
 const check_back = require('../models/ReturnCheckModel');
-
-
-
 
 // @desc    Get list of Clint
 // @route   GET /api/v1/Clints
@@ -26,6 +23,7 @@ exports.getClint = factory.getOne(Clint);
 // @route   POST  /api/v1/Clint
 // @access  Private
 exports.createClint = factory.createOne(Clint);
+
 // @desc    Update specific Clint
 // @route   PUT /api/v1/Clint/:id
 // @access  Private
@@ -35,8 +33,6 @@ exports.updateClint = factory.updateOne(Clint);
 // @route   DELETE /api/v1/Clint/:id
 // @access  Private
 exports.deleteClint = factory.deleteOne(Clint);
-
-// services/clintService.js
 
 exports.getClientDetails = asyncHandler(async (req, res, next) => {
   const { clientId } = req.params;
@@ -51,15 +47,15 @@ exports.getClientDetails = asyncHandler(async (req, res, next) => {
 
   const tax = await clint_tax.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
-  
+
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  if (!bell && !sela && !tax  && !chBack) {
+  if (!bell && !sela && !tax && !chBack) {
     return next(new ApiError(`No transactions found for client with ID: ${clientId}`, 404));
   }
 
-  res.status(200).json({  sela , bell , chBack ,tax });
+  res.status(200).json({ sela, bell, chBack, tax });
 });
 
 exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
@@ -75,101 +71,133 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   const tax = await clint_tax.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
-  
+
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  if (!bell && !sela && !tax  && !chBack) {
+  if (!bell.length && !sela.length && !tax.length && !chBack.length) {
     return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
   }
 
   const workbook = new ExcelJS.Workbook();
-  const salesheet = workbook.addWorksheet('مبيعات');
-  const bellsheet = workbook.addWorksheet('فوتير');
-  const taxSheet = workbook.addWorksheet('الضريبة');
-  const checkBackSheet = workbook.addWorksheet('الشيكات المرتجعة');
-//Add  columns for sell sheet
-salesheet.columns = [
-  { header: 'العميل', key: 'clint', width: 20 },
-  { header: 'النوع', key: 'product', width: 15 },
-  { header: 'وزن البكرة', key: 'o_wieght', width: 15 },
-  { header: 'مقاس', key: 'size_o', width: 15 },
-  { header: 'سعر', key: 'price_allQuantity', width: 15 },
-  { header: 'المدفوع', key: 'pay_now', width: 15 },
-  { header: 'تاريخ الإنشاء', key: 'createdAt', width: 20 },
-];
+  const worksheet = workbook.addWorksheet('Client Details');
 
- sela.forEach(sll=>{
-  salesheet.addRow({
-    clint:sll.clint.clint_name,
-    product:sll.product.type,
-    o_wieght:sll.o_wieght,
-    size_o :sll.size_o,
-    price_allQuantity:sll.price_allQuantity,
-    pay_now:sll.pay_now,
-    createdAt:sll.createdAt.toLocaleString(),
+  // Array to hold all records
+  const allRecords = [];
+
+  // Add all sell records
+  sela.forEach(sll => {
+    allRecords.push({
+      type: 'مبيعات',
+      clint: sll.clint.clint_name,
+      product: sll.product.type,
+      weight: sll.o_wieght,
+      size: sll.size_o,
+      amount: sll.price_allQuantity,
+      paid: sll.pay_now,
+      date: sll.createdAt,
+      checkNumber: '',
+      checkDate: '',
+      discountRate: '',
+      taxRate: '',
+    });
   });
- });
-  // Add columns for bell sheet
-  bellsheet.columns = [
-    { header: 'العميل', key: 'clint', width: 20 },
-    { header: 'مبلغ الفاتورة', key: 'payBell', width: 15 },
-    { header: 'طريقة الدفع', key: 'paymentMethod', width: 15 },
-    { header: 'رقم الشيك', key: 'checkNumber', width: 15 },
-    { header: 'تاريخ الشيك', key: 'checkDate', width: 15 },
-    { header: 'تاريخ الإنشاء', key: 'createdAt', width: 20 },
-  ];
 
-  // Add rows for sales sheet
+  // Add all bell records
   bell.forEach(sale => {
-    bellsheet.addRow({
+    allRecords.push({
+      type: 'فواتير',
       clint: sale.clint.clint_name,
-      payBell: sale.payBell,
-      paymentMethod: sale.paymentMethod,
+      product: '',
+      weight: '',
+      size: '',
+      amount: sale.payBell,
+      paid: sale.paymentMethod,
+      date: sale.createdAt,
       checkNumber: sale.checkNumber,
       checkDate: sale.checkDate,
-      createdAt: sale.createdAt.toLocaleString(),
+      discountRate: '',
+      taxRate: '',
     });
   });
 
-  
-
-  // Add columns for tax sheet
-  taxSheet.columns = [
-    { header: 'العميل', key: 'clint', width: 20 },
-    { header: 'مبلغ', key: 'amount', width: 15 },
-    { header: 'نسبة خصم', key: 'discountRate', width: 15 },
-    { header: 'الضريبة', key: 'taxRate', width: 15 },
-    { header: 'تاريخ الإنشاء', key: 'createdAt', width: 20 },
-  ];
-
-  // Add rows for tax sheet
+  // Add all tax records
   tax.forEach(t => {
-    taxSheet.addRow({
+    allRecords.push({
+      type: 'الضريبة',
       clint: t.clint.clint_name,
+      product: '',
+      weight: '',
+      size: '',
       amount: t.amount,
+      paid: '',
+      date: t.createdAt,
+      checkNumber: '',
+      checkDate: '',
       discountRate: t.discountRate,
-      taxRate:t.taxRate,
-      createdAt: t.createdAt.toLocaleString(),
+      taxRate: t.taxRate,
     });
   });
 
-  // Add columns for check back sheet
-  checkBackSheet.columns = [
-    { header: 'العميل', key: 'clint', width: 20 },
-    { header: 'مبلغ الشيك', key: 'checkAmount', width: 15 },
-    { header: 'تاريخ', key: 'createdAt', width: 20 },
-  ];
-
-  // Add rows for check back sheet
+  // Add all check back records
   chBack.forEach(ch => {
-    checkBackSheet.addRow({
+    allRecords.push({
+      type: 'الشيكات المرتجعة',
       clint: ch.clint.clint_name,
-      checkAmount: ch.checkAmount,
+      product: '',
+      weight: '',
+      size: '',
+      amount: ch.checkAmount,
+      paid: '',
+      date: ch.createdAt,
+      checkNumber: '',
       checkDate: ch.checkDate,
-      createdAt: ch.createdAt.toLocaleString(),
+      discountRate: '',
+      taxRate: '',
     });
   });
+
+  // Sort records by date
+  allRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Add header row
+  worksheet.addRow([
+    'النوع', 'العميل', 'النوع', 'وزن البكرة', 'مقاس', 'المبلغ', 'المدفوع', 'تاريخ الإنشاء', 'رقم الشيك', 'تاريخ الشيك', 'نسبة خصم', 'الضريبة'
+  ]);
+
+  // Add records to worksheet
+  allRecords.forEach(record => {
+    worksheet.addRow([
+      record.type,
+      record.clint,
+      record.product,
+      record.weight,
+      record.size,
+      record.amount,
+      record.paid,
+      record.date.toLocaleString(),
+      record.checkNumber,
+      record.checkDate,
+      record.discountRate,
+      record.taxRate,
+    ]);
+  });
+
+  // Set column widths
+  worksheet.columns = [
+    { key: 'type', width: 15 },
+    { key: 'clint', width: 25 },
+    { key: 'product', width: 20 },
+    { key: 'weight', width: 20 },
+    { key: 'size', width: 15 },
+    { key: 'amount', width: 20 },
+    { key: 'paid', width: 20 },
+    { key: 'date', width: 25 },
+    { key: 'checkNumber', width: 20 },
+    { key: 'checkDate', width: 20 },
+    { key: 'discountRate', width: 20 },
+    { key: 'taxRate', width: 20 },
+  ];
 
   // Set response headers
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
