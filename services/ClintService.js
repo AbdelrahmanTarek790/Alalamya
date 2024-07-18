@@ -51,8 +51,8 @@ exports.getClientDetails = asyncHandler(async (req, res, next) => {
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  if (!bell && !sela && !tax && !chBack) {
-    return next(new ApiError(`No transactions found for client with ID: ${clientId}`, 404));
+  if (!bell.length && !sela.length && !tax.length && !chBack.length) {
+    return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
   }
 
   res.status(200).json({ sela, bell, chBack, tax });
@@ -160,15 +160,35 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
   // Sort records by date
   allRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // Add header row
-  worksheet.addRow([
-    'النوع', 'العميل', 'النوع', 'وزن البكرة', 'مقاس', 'المبلغ', 'المدفوع', 'تاريخ الإنشاء', 'رقم الشيك', 'تاريخ الشيك', 'نسبة خصم', 'الضريبة'
-  ]);
+  // Add records to worksheet with headers
+  allRecords.forEach((record, index) => {
+    if (index === 0 || allRecords[index - 1].type !== record.type) {
+      // Add section header
+      const sectionHeader = worksheet.addRow([record.type]);
+      sectionHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
 
-  // Add records to worksheet
-  allRecords.forEach(record => {
+      switch (record.type) {
+        case 'مبيعات':
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
+          worksheet.addRow(['العميل', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء']);
+          break;
+        case 'فواتير':
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
+          worksheet.addRow(['العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء']);
+          break;
+        case 'الضريبة':
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
+          worksheet.addRow(['العميل', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء']);
+          break;
+        case 'الشيكات المرتجعة':
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
+          worksheet.addRow(['العميل', 'مبلغ الشيك', 'تاريخ']);
+          break;
+      }
+    }
+
+    // Add record row
     worksheet.addRow([
-      record.type,
       record.clint,
       record.product,
       record.weight,
@@ -185,7 +205,6 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Set column widths
   worksheet.columns = [
-    { key: 'type', width: 15 },
     { key: 'clint', width: 25 },
     { key: 'product', width: 20 },
     { key: 'weight', width: 20 },
