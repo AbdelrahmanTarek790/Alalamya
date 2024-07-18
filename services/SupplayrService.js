@@ -121,7 +121,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // Add columns for bell section
   worksheet.addRow([
-    'المورد', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء'
+    'المورد', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك','اسم البنك', 'تاريخ الإنشاء'
   ]);
   bell.forEach(bay => {
     worksheet.addRow([
@@ -130,6 +130,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
       bay.payment_method,
       bay.check_number,
       bay.check_date,
+      bay.bank_name,
       bay.createdAt.toLocaleString(),
     ]);
   });
@@ -141,6 +142,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
     { key: 'payment_method', width: 20 },
     { key: 'check_number', width: 20 },
     { key: 'check_date', width: 20 },
+    { key: 'bank_name', width: 20 },
     { key: 'createdAt', width: 25 },
   ];
 
