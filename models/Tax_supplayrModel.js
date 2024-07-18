@@ -40,7 +40,7 @@ const tax_supplayrSchema = new mongoose.Schema(
     },
     Notes: {
       type:String,
-      trim: true,
+     
     },
   },
   { timestamps: true }
