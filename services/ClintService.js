@@ -98,6 +98,7 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       date: sll.createdAt,
       checkNumber: '',
       checkDate: '',
+      bankName: '' ,
       discountRate: '',
       taxRate: '',
     });
@@ -113,9 +114,10 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       size: '',
       amount: sale.payBell,
       paid: sale.paymentMethod,
-      date: sale.createdAt,
       checkNumber: sale.checkNumber,
       checkDate: sale.checkDate,
+      bankName: sale.bankName ,
+      date: sale.createdAt,
       discountRate: '',
       taxRate: '',
     });
@@ -131,11 +133,12 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       size: '',
       amount: t.amount,
       paid: '',
-      date: t.createdAt,
       checkNumber: '',
       checkDate: '',
+      bankName: '' ,
       discountRate: t.discountRate,
       taxRate: t.taxRate,
+      date: t.createdAt,
     });
   });
 
@@ -149,9 +152,11 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       size: '',
       amount: ch.checkAmount,
       paid: '',
-      date: ch.createdAt,
       checkNumber: '',
+      num:ch.num,
       checkDate: ch.checkDate,
+      bankName: '' ,
+      date: ch.createdAt,
       discountRate: '',
       taxRate: '',
     });
@@ -169,20 +174,20 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
 
       switch (record.type) {
         case 'مبيعات':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
           worksheet.addRow(['العميل', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء']);
           break;
         case 'فواتير':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
-          worksheet.addRow(['العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء']);
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
+          worksheet.addRow(['العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك','اسم البنك', 'تاريخ الإنشاء']);
           break;
         case 'الضريبة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
           worksheet.addRow(['العميل', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء']);
           break;
         case 'الشيكات المرتجعة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
-          worksheet.addRow(['العميل', 'مبلغ الشيك', 'تاريخ']);
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF' } };
+          worksheet.addRow(['العميل', 'مبلغ الشيك','رقم الشيك', 'تاريخ','تاريخ الانشاء']);
           break;
       }
     }
