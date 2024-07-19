@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const ExcelJS = require('exceljs');
@@ -47,13 +47,13 @@ exports.getClientDetails = asyncHandler(async (req, res, next) => {
 
   const tax = await clint_tax.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
-
+  
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
- /* if (!bell.length && !sela.length && !tax.length && !chBack.length) {
-    return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`));
-  }*/
+  if (!bell && !sela && !tax && !chBack) {
+    return next(new ApiError(`No transactions found for client with ID: ${clientId}`, 404));
+  }
 
   res.status(200).json({ sela, bell, chBack, tax });
 });
@@ -71,178 +71,114 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   const tax = await clint_tax.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
-
+  
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  /*if (!bell.length && !sela.length && !tax.length && !chBack.length) {
+  if (!bell.length && !sela.length && !tax.length && !chBack.length) {
     return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
-  }*/
+  }
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Client Details');
 
-  // Array to hold all records
-  const allRecords = [];
+  // Add header for sales section
+  const salesHeader = worksheet.addRow(['مبيعات']);
+  salesHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  salesHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
 
-  // Add all sell records
+  // Add columns for sales section
+  worksheet.addRow([
+    'العميل', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء'
+  ]);
   sela.forEach(sll => {
-    allRecords.push({
-      type: 'مبيعات',
-      clint: sll.clint.clint_name,
-      product: sll.product.type,
-      weight: sll.o_wieght,
-      size: sll.size_o,
-      amount: sll.price_allQuantity,
-      paid: sll.pay_now,
-      checkNumber: '',
-      checkDate: '',
-      bankName: '' ,
-      discountRate: '',
-      taxRate: '',
-      date: sll.createdAt,
-    });
-  });
-
-  // Add all bell records
-  bell.forEach(sale => {
-    allRecords.push({
-      type: 'فواتير',
-      clint: sale.clint.clint_name,
-      product: '',
-      weight: '',
-      size: '',
-      amount: sale.payBell,
-      paid: sale.paymentMethod,
-      checkNumber: sale.checkNumber,
-      checkDate: sale.checkDate,
-      bankName: sale.bankName ,
-      discountRate: '',
-      taxRate: '',
-      date: sale.createdAt,
-    });
-  });
-
-  // Add all tax records
-  tax.forEach(t => {
-    allRecords.push({
-      type: 'الضريبة',
-      clint: t.clint.clint_name,
-      product: '',
-      weight: '',
-      size: '',
-      amount: t.amount,
-      paid: '',
-      checkNumber: '',
-      checkDate: '',
-      bankName: '' ,
-      discountRate: t.discountRate,
-      taxRate: t.taxRate,
-      date: t.createdAt,
-    });
-  });
-
-  // Add all check back records
-  chBack.forEach(ch => {
-    allRecords.push({
-      type: 'الشيكات المرتجعة',
-      clint: ch.clint.clint_name,
-      product: '',
-      weight: '',
-      size: '',
-      amount: ch.checkAmount,
-      paid: '',
-      checkNumber: '',
-      checkDate: ch.checkDate,
-      bankName: '' ,
-      discountRate: '',
-      taxRate: '',
-      date: ch.createdAt,
-    });
-  });
-
-  // Sort records by date
-  allRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Add records to worksheet with headers
-  allRecords.forEach((record, index) => {
-    if (index === 0 || allRecords[index - 1].type !== record.type) {
-      // Add section header
-      const sectionHeader = worksheet.addRow([record.type]);
-      sectionHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-
-      switch (record.type) {
-        case 'مبيعات':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
-          worksheet.addRow(['العميل', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء']);
-          break;
-        case 'فواتير':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
-          worksheet.addRow(['العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك','اسم البنك', 'تاريخ الإنشاء']);
-          break;
-        case 'الضريبة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
-          worksheet.addRow(['العميل', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء']);
-          break;
-        case 'الشيكات المرتجعة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
-          worksheet.addRow(['العميل', 'مبلغ الشيك', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء']);
-          break;
-      }
-    }
-
-    // Add record row
     worksheet.addRow([
-      record.clint,
-      record.product,
-      record.weight,
-      record.size,
-      record.amount,
-      record.paid,
-      record.checkNumber,
-      record.checkDate,
-      record.bankName,
-      record.discountRate,
-      record.taxRate,
-      record.date.toLocaleString(),
+      sll.clint.clint_name,
+      sll.product.type,
+      sll.o_wieght,
+      sll.size_o,
+      sll.price_allQuantity,
+      sll.pay_now,
+      sll.createdAt.toLocaleString(),
     ]);
   });
 
-  // Apply styles to the entire worksheet
-  worksheet.eachRow((row, rowNumber) => {
-    row.eachCell((cell, colNumber) => {
-      cell.border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' }
-      };
-      if (rowNumber === 1 || rowNumber % 2 === 0) {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: rowNumber === 1 ? 'FF4CAF50' : 'FFF0F0F0' }
-        };
-        cell.font = { bold: rowNumber === 1, color: { argb: rowNumber === 1 ? 'FFFFFFFF' : 'FF000000' } };
-      }
-    });
-  });
-
-  // Set column widths
+  // Set column widths for sales section
   worksheet.columns = [
     { key: 'clint', width: 25 },
     { key: 'product', width: 20 },
-    { key: 'weight', width: 20 },
-    { key: 'size', width: 15 },
-    { key: 'amount', width: 20 },
-    { key: 'paid', width: 20 },
-    { key: 'date', width: 25 },
-    { key: 'checkNumber', width: 20 },
-    { key: 'checkDate', width: 20 },
-    { key: 'bankName', width: 20 },
-    { key: 'discountRate', width: 20 },
-    { key: 'taxRate', width: 20 },
+    { key: 'o_wieght', width: 20 },
+    { key: 'size_o', width: 15 },
+    { key: 'price_allQuantity', width: 20 },
+    { key: 'pay_now', width: 20 },
+    { key: 'createdAt', width: 25 },
   ];
+
+  // Add an empty row to separate sections
+  worksheet.addRow([]);
+
+  // Add header for bell section
+  const bellHeader = worksheet.addRow(['فواتير']);
+  bellHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  bellHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
+
+  // Add columns for bell section
+  worksheet.addRow([
+    'العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء'
+  ]);
+  bell.forEach(sale => {
+    worksheet.addRow([
+      sale.clint.clint_name,
+      sale.payBell,
+      sale.paymentMethod,
+      sale.checkNumber,
+      sale.checkDate,
+      sale.createdAt.toLocaleString(),
+    ]);
+  });
+
+  // Add an empty row to separate sections
+  worksheet.addRow([]);
+
+  // Add header for tax section
+  const taxHeader = worksheet.addRow(['الضريبة']);
+  taxHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  taxHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
+
+  // Add columns for tax section
+  worksheet.addRow([
+    'العميل', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء'
+  ]);
+  tax.forEach(t => {
+    worksheet.addRow([
+      t.clint.clint_name,
+      t.amount,
+      t.discountRate,
+      t.taxRate,
+      t.createdAt.toLocaleString(),
+    ]);
+  });
+
+  // Add an empty row to separate sections
+  worksheet.addRow([]);
+
+  // Add header for check back section
+  const checkBackHeader = worksheet.addRow(['الشيكات المرتجعة']);
+  checkBackHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  checkBackHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
+
+  // Add columns for check back section
+  worksheet.addRow([
+    'العميل', 'مبلغ الشيك', 'تاريخ'
+  ]);
+  chBack.forEach(ch => {
+    worksheet.addRow([
+      ch.clint.clint_name,
+      ch.checkAmount,
+      ch.checkDate,
+      ch.createdAt.toLocaleString(),
+    ]);
+  });
 
   // Set response headers
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
