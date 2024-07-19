@@ -95,12 +95,12 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       size: sll.size_o,
       amount: sll.price_allQuantity,
       paid: sll.pay_now,
-      date: sll.createdAt,
       checkNumber: '',
       checkDate: '',
       bankName: '' ,
       discountRate: '',
       taxRate: '',
+      date: sll.createdAt,
     });
   });
 
@@ -117,9 +117,9 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       checkNumber: sale.checkNumber,
       checkDate: sale.checkDate,
       bankName: sale.bankName ,
-      date: sale.createdAt,
       discountRate: '',
       taxRate: '',
+      date: sale.createdAt,
     });
   });
 
@@ -155,9 +155,9 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       checkNumber: '',
       checkDate: ch.checkDate,
       bankName: '' ,
-      date: ch.createdAt,
       discountRate: '',
       taxRate: '',
+      date: ch.createdAt,
     });
   });
 
@@ -199,12 +199,12 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       record.size,
       record.amount,
       record.paid,
-      record.date.toLocaleString(),
       record.checkNumber,
       record.checkDate,
       record.bankName,
       record.discountRate,
       record.taxRate,
+      record.date.toLocaleString(),
     ]);
   });
 
