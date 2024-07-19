@@ -153,7 +153,6 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       amount: ch.checkAmount,
       paid: '',
       checkNumber: '',
-      num:ch.num,
       checkDate: ch.checkDate,
       bankName: '' ,
       date: ch.createdAt,
@@ -187,7 +186,7 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
           break;
         case 'الشيكات المرتجعة':
           sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
-          worksheet.addRow(['العميل', 'مبلغ الشيك','رقم الشيك', 'تاريخ','تاريخ الانشاء']);
+          worksheet.addRow(['العميل', 'مبلغ الشيك', 'رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء']);
           break;
       }
     }
