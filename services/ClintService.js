@@ -51,9 +51,9 @@ exports.getClientDetails = asyncHandler(async (req, res, next) => {
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  if (!bell.length && !sela.length && !tax.length && !chBack.length) {
-    return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
-  }
+ /* if (!bell.length && !sela.length && !tax.length && !chBack.length) {
+    return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`));
+  }*/
 
   res.status(200).json({ sela, bell, chBack, tax });
 });
@@ -75,9 +75,9 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
   const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name' });
 
-  if (!bell.length && !sela.length && !tax.length && !chBack.length) {
+  /*if (!bell.length && !sela.length && !tax.length && !chBack.length) {
     return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
-  }
+  }*/
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Client Details');
