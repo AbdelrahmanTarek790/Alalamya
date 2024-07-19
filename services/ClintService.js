@@ -208,6 +208,26 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
     ]);
   });
 
+  // Apply styles to the entire worksheet
+  worksheet.eachRow((row, rowNumber) => {
+    row.eachCell((cell, colNumber) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+      if (rowNumber === 1 || rowNumber % 2 === 0) {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: rowNumber === 1 ? 'FF4CAF50' : 'FFF0F0F0' }
+        };
+        cell.font = { bold: rowNumber === 1, color: { argb: rowNumber === 1 ? 'FFFFFFFF' : 'FF000000' } };
+      }
+    });
+  });
+
   // Set column widths
   worksheet.columns = [
     { key: 'clint', width: 25 },
