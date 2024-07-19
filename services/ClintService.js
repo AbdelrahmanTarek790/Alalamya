@@ -37,10 +37,19 @@ exports.deleteClint = factory.deleteOne(Clint);
 exports.getClientDetails = asyncHandler(async (req, res, next) => {
   const { clientId } = req.params;
 
-  const bell = await Sell_bell.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const sela = await Sell.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const tax = await clint_tax.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const chBack = await check_back.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
+  // Get all sales for the client
+  const bell = await Sell_bell.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  // Get all purchases for the client
+  const sela = await Sell.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  const tax = await clint_tax.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  const chBack = await check_back.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
 
   if (!bell.length && !sela.length && !tax.length && !chBack.length) {
     return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
@@ -52,10 +61,19 @@ exports.getClientDetails = asyncHandler(async (req, res, next) => {
 exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
   const { clientId } = req.params;
 
-  const bell = await Sell_bell.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const sela = await Sell.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const tax = await clint_tax.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
-  const chBack = await check_back.find({ clint: clientId }).populate({ path: 'clint', select: 'clint_name' });
+  // Get all sales for the client
+  const bell = await Sell_bell.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  // Get all purchases for the client
+  const sela = await Sell.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  const tax = await clint_tax.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
+
+  const chBack = await check_back.find({ clint: clientId })
+    .populate({ path: 'clint', select: 'clint_name' });
 
   if (!bell.length && !sela.length && !tax.length && !chBack.length) {
     return next(new ApiError(`لا توجد معاملات للعميل مع هذا المعرف: ${clientId}`, 404));
@@ -135,6 +153,7 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
       amount: ch.checkAmount,
       paid: '',
       checkNumber: '',
+      num:ch.num,
       checkDate: ch.checkDate,
       bankName: '' ,
       date: ch.createdAt,
@@ -155,20 +174,20 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
 
       switch (record.type) {
         case 'مبيعات':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
           worksheet.addRow(['العميل', 'النوع', 'وزن البكرة', 'مقاس', 'سعر', 'المدفوع', 'تاريخ الإنشاء']);
           break;
         case 'فواتير':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF9800' } };
           worksheet.addRow(['العميل', 'مبلغ الفاتورة', 'طريقة الدفع', 'رقم الشيك', 'تاريخ الشيك','اسم البنك', 'تاريخ الإنشاء']);
           break;
         case 'الضريبة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF44336' } };
           worksheet.addRow(['العميل', 'مبلغ', 'نسبة خصم', 'الضريبة', 'تاريخ الإنشاء']);
           break;
         case 'الشيكات المرتجعة':
-          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } };
-          worksheet.addRow(['العميل', 'مبلغ الشيك','رقم الشيك', 'تاريخ الشيك', 'تاريخ الإنشاء']);
+          sectionHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3F51B5' } };
+          worksheet.addRow(['العميل', 'مبلغ الشيك','رقم الشيك', 'تاريخ','تاريخ الانشاء']);
           break;
       }
     }
