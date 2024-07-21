@@ -54,6 +54,10 @@ const SellSchema = new mongoose.Schema(
       type: Number,
       
     },
+    allForall: {
+      type: Number,
+      
+    },
     taxAmount: {
       type: Number,
     
@@ -82,23 +86,17 @@ SellSchema.pre('save', async function (next) {
   tax.taxAmount = tax.price_allQuantity * (tax.taxRate / 100);
   tax.discountAmount = tax.price_allQuantity * (tax.discountRate / 100);
   tax.netAmount =  tax.taxAmount - tax.discountAmount;
-  if(tax.netAmount!= 0){
+  tax.allForall = tax.price_allQuantity + tax.netAmount ;
+
   const clint = await Clint.findById(tax.clint);
   if (clint) {
-    clint.total_monye += tax.netAmount;
-    clint.money_on+=  (tax.netAmount - tax.pay_now);
+    clint.total_monye += tax.allForall;
+    clint.money_on+=  (tax.allForall - tax.pay_now);
     clint.disCount = (clint.disCount || 0) + 1;
     await clint.save();
     }
-  }
-  else{
-    const clint = await Clint.findById(tax.clint);
-    if (clint) {
-      clint.total_monye += tax.price_allQuantity;
-      clint.money_on+=  (tax.price_allQuantity - tax.pay_now);
-      await clint.save();
-      }
-  }
+  
+  
   next();
 });
 
