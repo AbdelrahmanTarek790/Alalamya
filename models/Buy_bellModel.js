@@ -18,11 +18,7 @@ const Buy_bellSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    Notes: {
-      type:String,
-      trim: true,
-      default:'',
-    },
+    
     payment_method: {
       type: String,
       enum: ['cash', 'check'],
@@ -43,8 +39,13 @@ const Buy_bellSchema = new mongoose.Schema(
     check_date: {
       type: String,
       required: function () {
-        return this.payment_method === 'check';
+      return this.payment_method === 'check';
       },
+      Notes: {
+      type:String,
+      trim: true,
+      default:'',
+     },
     },
   },
   { timestamps: true }
