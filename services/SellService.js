@@ -12,7 +12,7 @@ const Sell = require('../models/sellModel');
 // @desc    Get list of Sell
 // @route   GET /api/v1/Sells
 // @access  Public
-exports.getSells = factory.getAll(Sell,'Product');
+exports.getSells = factory.getAll(Sell,'Sell');
 
 // @desc    Get specific Sell by id
 // @route   GET /api/v1/Sells/:id
@@ -82,8 +82,9 @@ exports.deleteSell = asyncHandler(async (req, res, next) => {
   }
   const clint = await Clint.findById(oldDocument1.clint);
   if (clint) {
+    const on = oldDocument1.price_allQuantity - oldDocument1.pay_now;
     clint.money_pay -= oldDocument1.pay_now;
-    clint.money_on -= (oldDocument1.price_allQuantity - oldDocument1.pay_now);
+    clint.money_on -= on ;
     clint.total_monye -= oldDocument1.price_allQuantity;
     await clint.save();
 }
