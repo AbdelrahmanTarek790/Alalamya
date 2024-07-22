@@ -18,6 +18,11 @@ const Buy_bellSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    Notes: {
+      type:String,
+      trim: true,
+      default:'',
+    },
     payment_method: {
       type: String,
       enum: ['cash', 'check'],
