@@ -18,11 +18,7 @@ const Sell_bellSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
-    Notes: {
-      type:String,
-      trim: true,
-      default:'',
-    },
+    
     paymentMethod: {
       type: String,
       enum: ['cash', 'check'],
@@ -47,6 +43,11 @@ const Sell_bellSchema = new mongoose.Schema(
       required: function () {
         return this.paymentMethod === 'check';
       },
+    },
+      Notes: {
+      type:String,
+      trim: true,
+      default:'',
     },
   },
   { timestamps: true }
