@@ -90,11 +90,11 @@ exports.deleteSell = asyncHandler(async (req, res, next) => {
   
   const document = await Sell_bell.findByIdAndDelete(req.params.id);
 
-    if (!document) {
+    /*if (!document) {
       return next(
         new ApiError(`No document for this id ${req.params.id}`, 404)
       );
-    }
+    }*/
 
     
     res.status(204).json({ data: null });
