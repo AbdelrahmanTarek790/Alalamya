@@ -75,7 +75,7 @@ exports.updateSell =  asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/Sells/:id
 // @access  Private
 exports.deleteSell = asyncHandler(async (req, res, next) => {
-  const oldDocument1 = await Sell_bell.findById(req.params.id);
+  const oldDocument1 = await Sell.findById(req.params.id);
 
   if (!oldDocument1) {
     return next(new ApiError(`No document found for this ID: ${req.params.id}`, 404));
@@ -89,7 +89,7 @@ exports.deleteSell = asyncHandler(async (req, res, next) => {
     await clint.save();
 }
   
-  const document = await Sell_bell.findByIdAndDelete(req.params.id);
+  const document = await Sell.findByIdAndDelete(req.params.id);
 
     /*if (!document) {
       return next(
