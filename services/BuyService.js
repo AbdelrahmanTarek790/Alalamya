@@ -87,20 +87,20 @@ exports.deleteBuy = asyncHandler(async (req, res, next) => {
   }
   const supplayr = await Supplayr.findById(oldDocument2.supplayr);
   if (supplayr) {
-    const on = oldDocument2.price_all - oldDocument2.pay_bell;
+    const On = oldDocument2.price_all - oldDocument2.pay_bell;
     supplayr.price_pay -= oldDocument2.pay;
-    supplayr.price_on -= on
+    supplayr.price_on -= On ;
     supplayr.total_price -= oldDocument2.price_all;
     await supplayr.save();
 }
   
   const document = await Buy.findByIdAndDelete(req.params.id);
 
-    /*if (!document) {
+    if (!document) {
       return next(
         new ApiError(`No document for this id ${req.params.id}`, 404)
       );
-    }*/
+    }
 
     
     res.status(204).json({ data: null });
