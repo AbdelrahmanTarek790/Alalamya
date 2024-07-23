@@ -55,7 +55,7 @@ BuySchema.pre(/^find/, function (next) {
   next();
 });
 
-BuySchema.statics.updateWarehouse = async function (user, product, product_code, E_wieght, size) {
+BuySchema.statics.updateWarehouse = async function (user,supplayr, product, product_code, E_wieght, size) {
   const existingWarehouse = await Warehouse.findOne({ product_code });
   if (existingWarehouse) {
     await Warehouse.findByIdAndUpdate(existingWarehouse._id, {
@@ -63,7 +63,7 @@ BuySchema.statics.updateWarehouse = async function (user, product, product_code,
       size
     }, { new: true, runValidators: true });
   } else {
-    await Warehouse.create({ user, product, product_code, weight: E_wieght, size });
+    await Warehouse.create({ user,supplayr, product, product_code, weight: E_wieght, size });
   }
 };
 
