@@ -113,7 +113,7 @@ BuySchema.statics.allcalc_d = async function (supplayrId,price_all,price_Pay) {
 
 
 BuySchema.post('save', async function () {
-  await this.constructor.updateWarehouse(this.user, this.product, this.product_code, this.E_wieght, this.size);
+  await this.constructor.updateWarehouse(this.user, this.supplayr,this.product, this.product_code, this.E_wieght, this.size);
   await this.constructor.calcAveragePrice(this.product);
   await this.constructor.updateProductWeight(this.product, this.E_wieght);
   await this.constructor.takeMoney_d(this.supplayr,this.price_all,this.pay);
