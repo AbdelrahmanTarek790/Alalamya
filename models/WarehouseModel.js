@@ -10,6 +10,7 @@ const warehouseSchema = new mongoose.Schema(
     supplayr: {
       type: mongoose.Schema.ObjectId,
       ref: 'Supplayr',
+      required: true,
     },
     product: {
       type: mongoose.Schema.ObjectId,
