@@ -70,7 +70,7 @@ BuySchema.statics.updateWarehouse = async function (user,supplayr, product, prod
 BuySchema.statics.calcAveragePrice = async function (productId) {
   const result = await this.aggregate([
     {
-      $match: { product: productId },
+     $match: { product: mongoose.Types.ObjectId(productId) },
     },
     {
       $group: {
@@ -82,7 +82,7 @@ BuySchema.statics.calcAveragePrice = async function (productId) {
 
   if (result.length > 0) {
     await Product.findByIdAndUpdate(productId, {
-      avg_price: result[0].avg_price,
+      avg_price: result[0].avg_price.toFixed(2),
     });
   }
 };
