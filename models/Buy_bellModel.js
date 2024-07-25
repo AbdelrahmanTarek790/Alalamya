@@ -42,7 +42,6 @@ const Buy_bellSchema = new mongoose.Schema(
       return this.payment_method === 'check';
       },
      },
-    
       Notes: {
       type:String,
       trim: true,

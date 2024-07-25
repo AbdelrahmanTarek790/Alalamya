@@ -16,7 +16,7 @@ exports.getTax_clints = factory.getAll(Tax_clint,'Tax_clint');
 // @desc    Get specific Tax_clint by id
 // @route   GET /api/v1/Tax_clint/:id
 // @access  Public
-exports.getTax_clint = factory.getOne(Tax_clint,'Clint');
+exports.getTax_clint = factory.getOne(Tax_clint,'clint');
 
 // @desc    Create Tax_clint
 // @route   POST  /api/v1/Tax_clint
