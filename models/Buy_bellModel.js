@@ -41,11 +41,12 @@ const Buy_bellSchema = new mongoose.Schema(
       required: function () {
       return this.payment_method === 'check';
       },
+     },
+    
       Notes: {
       type:String,
       trim: true,
       default:'',
-     },
     },
   },
   { timestamps: true }
