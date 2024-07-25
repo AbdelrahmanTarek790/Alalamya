@@ -16,7 +16,7 @@ exports.getTax_supplayrs = factory.getAll(Tax_supplayr,'Tax_supplayr');
 // @desc    Get specific Tax_supplayr by id
 // @route   GET /api/v1/Tax_supplayr/:id
 // @access  Public
-exports.getTax_supplayr = factory.getOne(Tax_supplayr,'Supplayr');
+exports.getTax_supplayr = factory.getOne(Tax_supplayr,'supplayr');
 
 // @desc    Create Tax_supplayr
 // @route   POST  /api/v1/Tax_supplayr
