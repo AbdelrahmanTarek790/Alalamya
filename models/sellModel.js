@@ -67,6 +67,11 @@ const SellSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    Notes: {
+      type:String,
+      trim: true,
+      default:'',
+    },
   },
   { timestamps: true }
 );
