@@ -72,6 +72,11 @@ ReturnSchema.statics.addToWarehouse = async function (product_code, weightReturn
     const newProduct = new Warehouse({
       product_code: product_code,
       weight: weightReturned,
+      size:size_o,
+      user:user,
+      product:product,
+      supplayr:"66a1f4aa1502d5461f330455",
+
     });
     await newProduct.save();
   } else {
