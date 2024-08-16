@@ -26,6 +26,10 @@ const tax_supplayrSchema = new mongoose.Schema(
       type: Number,
       default:0,
     },
+    Bell_num: {
+      type: Number,
+      default:0,
+    },
     netAmount: {
       type: Number,
       

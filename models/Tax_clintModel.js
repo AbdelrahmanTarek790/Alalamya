@@ -26,6 +26,10 @@ const taxSchema = new mongoose.Schema(
       type: Number,
       default:0,
     },
+    bell_num: {
+      type: Number,
+      default:0,
+    },
     netAmount: {
       type: Number,
       
