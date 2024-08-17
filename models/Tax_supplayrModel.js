@@ -42,6 +42,12 @@ const tax_supplayrSchema = new mongoose.Schema(
       type: Number,
       
     },
+    Company_name: {
+      type:String,
+      trim: true,
+      default:'',
+      
+    },
     Notes: {
       type:String,
       trim: true,
