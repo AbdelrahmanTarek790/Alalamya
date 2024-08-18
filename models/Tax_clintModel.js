@@ -48,6 +48,10 @@ const taxSchema = new mongoose.Schema(
       default:'',
       
     },
+    entryDate: {
+      type: Date,
+      default: Date.now,
+    },
      Notes: {
       type:String,
       trim: true,
