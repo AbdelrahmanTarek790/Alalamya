@@ -67,6 +67,10 @@ const SellSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    entry_date: {
+      type: Date,
+      default: Date.now,
+    },
     Notes: {
       type:String,
       trim: true,
