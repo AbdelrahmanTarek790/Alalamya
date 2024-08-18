@@ -48,7 +48,7 @@ const tax_supplayrSchema = new mongoose.Schema(
       default:'',
       
     },
-    EntryDate: {
+    entryDate: {
       type: Date,
       default: Date.now,
     },
