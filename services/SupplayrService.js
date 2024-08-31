@@ -119,6 +119,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
         buy.totalWeight,
         buy.PriceKilo,
         buy.totalPrice,
+        'مشتريات',
       ],
       color: 'FF4CAF50' // اللون الأخضر للمشتريات
     });

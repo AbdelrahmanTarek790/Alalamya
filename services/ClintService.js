@@ -124,6 +124,7 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
         sale.totalWeight,
         sale.PriceforKilo, // سعر الكيلو غير مطلوب الآن
         sale.totalPrice,
+        'مبيعات',
       ],
       color: 'FF4CAF50' // اللون الأخضر للمبيعات
     });
