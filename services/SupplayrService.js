@@ -80,7 +80,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
 
   // تهيئة مصفوفة لتخزين جميع البيانات للترتيب حسب التاريخ
   const allEntries = [];
-
+  
   const money = buys[0]?.supplayr.price_on ;
   // خريطة لتجميع المشتريات حسب التاريخ والنوع
   const buysMap = {};
@@ -90,6 +90,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
     const entryDate = by.Entry_date.toLocaleDateString('ar-EG', { dateStyle: 'short' });
     const productType = by.product.type;
     const PricKilo = by.price_Kilo;
+     const notes = by.Notes;
     // إنشاء مفتاح فريد لكل تاريخ ونوع منتج
     const key = `${entryDate}-${productType}`;
 
@@ -100,6 +101,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
         totalWeight: 0,
         totalPrice: 0,
         PriceKilo:PricKilo,
+        Note:notes,
       };
     }
 
@@ -119,6 +121,7 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
         buy.totalWeight,
         buy.PriceKilo,
         buy.totalPrice,
+        buy.Note,
         'مشتريات',
       ],
       color: 'FF4CAF50' // اللون الأخضر للمشتريات
@@ -129,13 +132,14 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
   bell.forEach(bl => {
     allEntries.push({
       type: 'bell',
-      date: bl.createdAt,
+      date: bl.Entry_date,
       row: [
-        bl.createdAt.toLocaleDateString('ar-EG', { dateStyle: 'short' }),
+        bl.Entry_date.toLocaleDateString('ar-EG', { dateStyle: 'short' }),
         bl.payment_method,
         bl.pay_bell,
         bl.bank_name,
         bl.check_number,
+        bl.Notes,
         'فواتير',
       ],
       color: 'FFFF9800' // اللون البرتقالي للفواتير
@@ -152,6 +156,9 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
         t.amount,
         t.taxRate,
         t.discountRate,
+        t.Bell_num,
+        t.Company_name,
+        t.Notes,
         'ضرائب',
       ],
       color: 'FFF44336' // اللون الأحمر للضرائب
@@ -162,7 +169,91 @@ exports.exportSupplayrDetailsToExcel = asyncHandler(async (req, res, next) => {
   allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   // إضافة صف الرأس إلى الورقة
-  worksheet.addRow(['التاريخ', 'الصنف', 'الكمية', 'السعر', 'القيمة']);
+  worksheet.addRow(['التاريخ', 'الصنف', 'الكمية', 'السعر', 'القيمة','اسم شركة','الملاحظات']);
+
+  // إضافة البيانات المرتبة إلى الورقة
+  allEntries.forEach(entry => {
+    const row = worksheet.addRow(entry.row);
+    row.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: entry.color } };
+  });
+ 
+ 
+  const finalRow = worksheet.addRow(['', '', '', '', 'الرصيد المتبقي:']);
+  finalRow.font = { bold: true };
+  finalRow.alignment = { horizontal: 'right' };
+
+  const finalBalanceRow = worksheet.addRow(['', '', '', '', money]);
+  finalBalanceRow.font = { bold: true, color: { argb: 'FF000000' } };
+  finalBalanceRow.alignment = { horizontal: 'right' };
+
+  for (let i = 1; i <= 8; i++) {
+    worksheet.getColumn(i).width = 30;
+    worksheet.getColumn(i).alignment = { horizontal: 'center' };
+  }
+  // إعداد رؤوس الاستجابة
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', `attachment; filename=supplier_${supplayrId}_details.xlsx`);
+
+  // كتابة الملف إلى الاستجابة
+  await workbook.xlsx.write(res);
+  res.end();
+});
+
+
+//export Supplayr Cheack 
+exports.exportSupplayrCheakToExcel = asyncHandler(async (req, res, next) => {
+  const { supplayrId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(supplayrId)) {
+    return next(new ApiError('Invalid supplier ID', 400));
+  }
+
+  // الحصول على جميع المبيعات والمشتريات للمورد باستخدام الشيكات فقط
+const bell = await Buy_bell.find({ 
+  supplayr: supplayrId,
+  payment_method: 'check' // فقط الفواتير المدفوعة بواسطة الشيكات
+})
+.populate({ path: 'supplayr', select: 'supplayr_name' });
+
+if (!bell.length) {
+  return next(new ApiError(`No transactions found for supplier with ID: ${supplayrId}, 404`));
+}
+
+// باقي الكود يظل كما هو
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(bell[0]?.supplayr.supplayr_name || 'عميل');
+
+  // تهيئة مصفوفة لتخزين جميع البيانات للترتيب حسب التاريخ
+  const allEntries = [];
+  
+  const money = bell[0]?.supplayr.price_on ;
+  
+  // تجميع بيانات الفواتير
+  bell.forEach(bl => {
+    allEntries.push({
+      type: 'bell',
+      date: bl.Entry_date,
+      row: [
+        bl.Entry_date.toLocaleDateString('ar-EG', { dateStyle: 'short' }),
+        bl.pay_bell,
+        bl.bank_name,
+        bl.check_number,
+        bl.check_date,
+        bl.Notes,
+      ],
+      color: '808080' // اللون للفواتير
+    });
+  });
+
+  
+
+  // ترتيب جميع الإدخالات حسب التاريخ
+  allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // إضافة صف الرأس إلى الورقة
+  worksheet.addRow(['التاريخ', 'المبلغ', 'اسم البنك', 'رقم الشيك', 'تاريخ الشيك','الملاحظات']);
 
   // إضافة البيانات المرتبة إلى الورقة
   allEntries.forEach(entry => {
