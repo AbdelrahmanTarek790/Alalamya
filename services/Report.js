@@ -26,8 +26,8 @@ exports.generateReport = async () => {
   const salesByMonth = await Sell.aggregate([
     {
       $project: {
-        month: { $month: '$entryDate' },
-        year: { $year: '$entryDate' },
+        month: { $month: '$entry_date' },
+        year: { $year: '$entry_date' },
         price_allQuantity: 1,
         o_wieght: 1
       }
@@ -51,8 +51,8 @@ exports.generateReport = async () => {
   const purchasesByMonth = await Buy.aggregate([
     {
       $project: {
-        month: { $month: '$entryDate' },
-        year: { $year: '$entryDate' },
+        month: { $month: '$Entry_date' },
+        year: { $year: '$Entry_date' },
         price_all: 1
       }
     },
