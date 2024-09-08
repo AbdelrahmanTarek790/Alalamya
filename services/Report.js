@@ -17,6 +17,27 @@ exports.generateReport = async () => {
     }
   ]);
 
+  // حساب المالية للمبيعات في كل شهر باستخدام entryDate
+  const salesByMonth = await Sell.aggregate([
+    {
+      $group: {
+        _id: { month: { $month: '$entry_date' }, year: { $year: '$entry_date' } },
+        totalAmount: { $sum: '$price_allQuantity' },
+        totalWeight: { $sum: '$o_wieght' }
+      }
+    }
+  ]);
+
+  // حساب المالية للمشتريات في كل شهر باستخدام entryDate
+  const purchasesByMonth = await Buy.aggregate([
+    {
+      $group: {
+        _id: { month: { $month: '$Entry_date' }, year: { $year: '$Entry_date' } },
+        totalAmount: { $sum: '$price_all' }
+      }
+    }
+  ]);
+
   // حساب الأموال المدفوعة من العملاء باستخدام Sell و Sell_bell
   const totalPaidByClientsFromSell = await Sell.aggregate([
     {
@@ -105,6 +126,8 @@ exports.generateReport = async () => {
     totalDueToSuppliers: totalDueToSuppliers.length > 0 ? totalDueToSuppliers[0].totalDue : 0,
     totalPurchases,
     totalProfit,
-    totalWightMoney: totalWightMoney.length > 0 ? totalWightMoney[0].totalWightMoney : 0  // إضافة إجمالي wight_money
+    totalWightMoney: totalWightMoney.length > 0 ? totalWightMoney[0].totalWightMoney : 0,
+    salesByMonth,  // المالية للمبيعات في كل شهر
+    purchasesByMonth  // المالية للمشتريات في كل شهر
   };
 };
