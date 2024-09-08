@@ -6,6 +6,11 @@ const Supplier = require('../models/SupplayrModel');
 const Product = require('../models/ProductModel');
 
 exports.generateReport = async () => {
+  // الحصول على الشهر والسنة الحاليين
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1; // الأشهر في JavaScript تبدأ من 0
+  const currentYear = currentDate.getFullYear();
+
   // حساب إجمالي المبيعات
   const totalSales = await Sell.aggregate([
     {
@@ -17,22 +22,42 @@ exports.generateReport = async () => {
     }
   ]);
 
-  // حساب المالية للمبيعات في كل شهر باستخدام entryDate
+  // حساب المالية للمبيعات في الشهر الحالي باستخدام entryDate
   const salesByMonth = await Sell.aggregate([
     {
+      $match: {
+        $expr: {
+          $and: [
+            { $eq: [{ $month: '$entry_date' }, currentMonth] },
+            { $eq: [{ $year: '$entry_date' }, currentYear] }
+          ]
+        }
+      }
+    },
+    {
       $group: {
-        _id: { month: { $month: '$entry_date' }, year: { $year: '$entry_date' } },
+        _id: { month: currentMonth, year: currentYear },
         totalAmount: { $sum: '$price_allQuantity' },
         totalWeight: { $sum: '$o_wieght' }
       }
     }
   ]);
 
-  // حساب المالية للمشتريات في كل شهر باستخدام entryDate
+  // حساب المالية للمشتريات في الشهر الحالي باستخدام entryDate
   const purchasesByMonth = await Buy.aggregate([
     {
+      $match: {
+        $expr: {
+          $and: [
+            { $eq: [{ $month: '$Entry_date' }, currentMonth] },
+            { $eq: [{ $year: '$Entry_date' }, currentYear] }
+          ]
+        }
+      }
+    },
+    {
       $group: {
-        _id: { month: { $month: '$Entry_date' }, year: { $year: '$Entry_date' } },
+        _id: { month: currentMonth, year: currentYear },
         totalAmount: { $sum: '$price_all' }
       }
     }
@@ -127,7 +152,7 @@ exports.generateReport = async () => {
     totalPurchases,
     totalProfit,
     totalWightMoney: totalWightMoney.length > 0 ? totalWightMoney[0].totalWightMoney : 0,
-    salesByMonth,  // المالية للمبيعات في كل شهر
-    purchasesByMonth  // المالية للمشتريات في كل شهر
+    salesByMonth,  // المالية للمبيعات في الشهر الحالي
+    purchasesByMonth  // المالية للمشتريات في الشهر الحالي
   };
 };
