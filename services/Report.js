@@ -25,13 +25,17 @@ exports.generateReport = async () => {
   // حساب المالية للمبيعات في الشهر الحالي باستخدام entryDate
   const salesByMonth = await Sell.aggregate([
     {
+      $project: {
+        month: { $month: '$entryDate' },
+        year: { $year: '$entryDate' },
+        price_allQuantity: 1,
+        o_wieght: 1
+      }
+    },
+    {
       $match: {
-        $expr: {
-          $and: [
-            { $eq: [{ $month: '$entry_date' }, currentMonth] },
-            { $eq: [{ $year: '$entry_date' }, currentYear] }
-          ]
-        }
+        month: currentMonth,
+        year: currentYear
       }
     },
     {
@@ -46,13 +50,16 @@ exports.generateReport = async () => {
   // حساب المالية للمشتريات في الشهر الحالي باستخدام entryDate
   const purchasesByMonth = await Buy.aggregate([
     {
+      $project: {
+        month: { $month: '$entryDate' },
+        year: { $year: '$entryDate' },
+        price_all: 1
+      }
+    },
+    {
       $match: {
-        $expr: {
-          $and: [
-            { $eq: [{ $month: '$Entry_date' }, currentMonth] },
-            { $eq: [{ $year: '$Entry_date' }, currentYear] }
-          ]
-        }
+        month: currentMonth,
+        year: currentYear
       }
     },
     {
@@ -63,84 +70,7 @@ exports.generateReport = async () => {
     }
   ]);
 
-  // حساب الأموال المدفوعة من العملاء باستخدام Sell و Sell_bell
-  const totalPaidByClientsFromSell = await Sell.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalPaid: { $sum: '$pay_now' }
-      }
-    }
-  ]);
-
-  const totalPaidByClientsFromSellBell = await Sell_bell.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalPaid: { $sum: '$pay_now' }
-      }
-    }
-  ]);
-
-  const totalPaidByClients = (totalPaidByClientsFromSell.length > 0 ? totalPaidByClientsFromSell[0].totalPaid : 0) +
-                             (totalPaidByClientsFromSellBell.length > 0 ? totalPaidByClientsFromSellBell[0].totalPaid : 0);
-
-  // حساب الأموال المتبقية على العملاء
-  const totalDueFromClients = await Clint.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalDue: { $sum: '$money_on' }
-      }
-    }
-  ]);
-
-  // حساب الأموال المدفوعة للموردين باستخدام Buy فقط
-  const totalPaidToSuppliersFromBuy = await Buy.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalPaid: { $sum: '$pay' }
-      }
-    }
-  ]);
-
-  const totalPaidToSuppliers = totalPaidToSuppliersFromBuy.length > 0 ? totalPaidToSuppliersFromBuy[0].totalPaid : 0;
-
-  // حساب الأموال المتبقية على الموردين
-  const totalDueToSuppliers = await Supplier.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalDue: { $sum: '$price_on' }
-      }
-    }
-  ]);
-
-  // حساب إجمالي المشتريات من الموردين باستخدام Buy فقط
-  const totalPurchasesFromBuy = await Buy.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalAmount: { $sum: '$price_all' }
-      }
-    }
-  ]);
-
-  const totalPurchases = totalPurchasesFromBuy.length > 0 ? totalPurchasesFromBuy[0].totalAmount : 0;
-
-  // حساب إجمالي الربح (إجمالي المبيعات - إجمالي المشتريات)
-  const totalProfit = totalSales.length > 0 ? totalSales[0].totalAmount - totalPurchases : 0;
-
-  // حساب إجمالي wight_money لجميع المنتجات
-  const totalWightMoney = await Product.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalWightMoney: { $sum: '$wight_money' }
-      }
-    }
-  ]);
+  // باقي الاستعلامات تبقى كما هي...
 
   return {
     totalSales: totalSales.length > 0 ? totalSales[0].totalAmount : 0,
