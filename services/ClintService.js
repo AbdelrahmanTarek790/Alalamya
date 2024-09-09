@@ -256,7 +256,7 @@ if (!bell.length &&!tax.length) {
   // تهيئة مصفوفة لتخزين جميع البيانات للترتيب حسب التاريخ
   const allEntries = [];
   
-   money = sela[0]?.clint.money_on; ;
+   money = bell[0]?.clint.money_on; ;
   
   // تجميع بيانات الفواتير
   bell.forEach(bl => {
