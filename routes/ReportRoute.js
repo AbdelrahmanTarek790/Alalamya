@@ -3,7 +3,7 @@ const authService = require('../services/authService');
 const { generateReport } = require('../services/Report');
 const router = express.Router();
 
-router.get('/', authService.protect, authService.allowedTo('admin'),
+router.get('/', authService.protect, authService.allowedTo('admin','storage_employee'),
   async (req, res) => {
     try {
       // استدعاء دالة generateReport بدون معلمات
