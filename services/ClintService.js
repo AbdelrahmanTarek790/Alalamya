@@ -269,7 +269,7 @@ if (!bell.length &&!tax.length) {
         bl.bankName,
         bl.checkNumber,
         bl.checkDate,
-        b1.Notes,
+        bl.Notes,
       ],
       color: '808080' // اللون البرتقالي للتحصيلات
     });
