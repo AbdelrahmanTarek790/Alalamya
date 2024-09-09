@@ -235,7 +235,7 @@ exports.exportClintCheakToExcel = asyncHandler(async (req, res, next) => {
   }
 
   // الحصول على جميع المبيعات والمشتريات للمورد باستخدام الشيكات فقط
-const bell = await Buy_bell.find({ 
+const bell = await Sell_bell.find({ 
   clint: clientId,
   paymentMethod: 'check' // فقط الفواتير المدفوعة بواسطة الشيكات
 })
