@@ -145,7 +145,7 @@ exports.exportClientDetailsToExcel = asyncHandler(async (req, res, next) => {
         bl.payBell,
         bl.bankName,
         bl.checkNumber,
-        b1.Notes,
+        bl.Notes,
         'تحصيلات',
       ],
       color: 'FFFF9800' // اللون البرتقالي للتحصيلات
