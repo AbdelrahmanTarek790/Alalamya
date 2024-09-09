@@ -15,7 +15,8 @@ router.get('/', authService.protect, authService.allowedTo('admin'),
     } catch (err) {
       res.status(500).json({
         status: 'error',
-        message: err.message
+        message: err.message,
+      
       });
     }
   }
