@@ -1,6 +1,6 @@
 const express = require('express');
 const authService = require('../services/authService');
-const { generateReport } = require('../services/Report');
+const { generateReport ,generateAugustReport} = require('../services/Report');
 const router = express.Router();
 
 router.get('/', authService.protect, authService.allowedTo('admin','storage_employee'),
@@ -21,5 +21,5 @@ router.get('/', authService.protect, authService.allowedTo('admin','storage_empl
     }
   }
 );
-
+router.get('/augst',generateAugustReport)
 module.exports = router;
