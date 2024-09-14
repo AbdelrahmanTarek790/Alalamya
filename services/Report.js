@@ -159,15 +159,16 @@ exports.generateReport = async () => {
   }
 };
 
-exports.generateAugustReport = async () => {
+
+
+exports.generateAugustReport = async (req, res) => {
   try {
-    // مبيعات من 1 إلى 31 أغسطس
     const augustSales = await Sell.aggregate([
       {
         $match: {
           entry_date: {
-            $gte: new Date(new Date().getFullYear(), 8, 1), // بداية 1 أغسطس
-            $lt: new Date(new Date().getFullYear(), 8, 32)  // نهاية 31 أغسطس
+            $gte: new Date(new Date().getFullYear(), 7, 1),  // 1 أغسطس
+            $lt: new Date(new Date().getFullYear(), 7, 32)  // 31 أغسطس
           }
         }
       },
@@ -180,13 +181,12 @@ exports.generateAugustReport = async () => {
       }
     ]);
 
-    // مشتريات من 1 إلى 31 أغسطس
     const augustPurchases = await Buy.aggregate([
       {
         $match: {
           Entry_date: {
-            $gte: new Date(new Date().getFullYear(), 8, 1), // بداية 1 أغسطس
-            $lt: new Date(new Date().getFullYear(), 8, 32)  // نهاية 31 أغسطس
+            $gte: new Date(new Date().getFullYear(), 7, 1),  // 1 أغسطس
+            $lt: new Date(new Date().getFullYear(), 7, 32)   // 31 أغسطس
           }
         }
       },
@@ -199,16 +199,16 @@ exports.generateAugustReport = async () => {
       }
     ]);
 
-    // إرجاع التقرير النهائي لشهر أغسطس (من 1 إلى 31)
-    return {
+    // إرجاع التقرير كاستجابة HTTP
+    return res.json({
       augustSales: augustSales.length > 0 ? augustSales[0].totalAmount : 0,
       augustWeightSold: augustSales.length > 0 ? augustSales[0].totalWeight : 0,
       augustPurchases: augustPurchases.length > 0 ? augustPurchases[0].totalAmount : 0,
       augustWeightPurchased: augustPurchases.length > 0 ? augustPurchases[0].totalWeight : 0
-    };
+    });
 
   } catch (error) {
     console.error("Error generating August report:", error.message);
-    throw new Error("Error generating August report");
+    return res.status(500).json({ error: "Error generating August report" });
   }
 };
