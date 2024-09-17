@@ -5,10 +5,20 @@ const Clint = require('../models/ClintModel');
 const Supplier = require('../models/SupplayrModel');
 const Product = require('../models/ProductModel');
 
+
+
 exports.generateReport = async () => {
+
+  const clientIdTest = "66a1f49c1502d5461f330450" ;
+
+  const supplierIdTest = "66a1f4aa1502d5461f330455" ;
+  
   try {
-    // إجمالي المبيعات
+    // إجمالي المبيعات مع استبعاد العميل الذي يحمل الاسم "test"
     const totalSales = await Sell.aggregate([
+      {
+        $match: { clientId: { $ne: clientIdTest } }  // استبعاد العميل
+      },
       {
         $group: {
           _id: null,
@@ -18,8 +28,11 @@ exports.generateReport = async () => {
       }
     ]);
 
-    // المبلغ المدفوع من العملاء
+    // المبلغ المدفوع من العملاء مع استبعاد العميل الذي يحمل الاسم "test"
     const totalPaidByClientsFromSell = await Sell.aggregate([
+      {
+        $match: { clientId: { $ne: clientIdTest } }  // استبعاد العميل
+      },
       {
         $group: {
           _id: null,
@@ -29,6 +42,9 @@ exports.generateReport = async () => {
     ]);
 
     const totalPaidByClientsFromSellBell = await Sell_bell.aggregate([
+      {
+        $match: { clientId: { $ne: clientIdTest } }  // استبعاد العميل
+      },
       {
         $group: {
           _id: null,
@@ -41,8 +57,11 @@ exports.generateReport = async () => {
       (totalPaidByClientsFromSell.length > 0 ? totalPaidByClientsFromSell[0].totalPaid : 0) +
       (totalPaidByClientsFromSellBell.length > 0 ? totalPaidByClientsFromSellBell[0].totalPaid : 0);
 
-    // إجمالي المستحقات من العملاء
+    // إجمالي المستحقات من العملاء مع استبعاد العميل الذي يحمل الاسم "test"
     const totalDueFromClients = await Clint.aggregate([
+      {
+        $match: { _id: { $ne: clientIdTest } }  // استبعاد العميل
+      },
       {
         $group: {
           _id: null,
@@ -51,8 +70,11 @@ exports.generateReport = async () => {
       }
     ]);
 
-    // المبلغ المدفوع للموردين
+    // المبلغ المدفوع للموردين مع استبعاد المورد الذي يحمل الاسم "Test"
     const totalPaidToSuppliersFromBuy = await Buy.aggregate([
+      {
+        $match: { supplierId: { $ne: supplierIdTest } }  // استبعاد المورد
+      },
       {
         $group: {
           _id: null,
@@ -63,8 +85,11 @@ exports.generateReport = async () => {
 
     const totalPaidToSuppliers = totalPaidToSuppliersFromBuy.length > 0 ? totalPaidToSuppliersFromBuy[0].totalPaid : 0;
 
-    // إجمالي المستحقات للموردين
+    // إجمالي المستحقات للموردين مع استبعاد المورد الذي يحمل الاسم "Test"
     const totalDueToSuppliers = await Supplier.aggregate([
+      {
+        $match: { _id: { $ne: supplierIdTest } }  // استبعاد المورد
+      },
       {
         $group: {
           _id: null,
@@ -73,8 +98,11 @@ exports.generateReport = async () => {
       }
     ]);
 
-    // إجمالي المشتريات
+    // إجمالي المشتريات مع استبعاد المورد الذي يحمل الاسم "Test"
     const totalPurchasesFromBuy = await Buy.aggregate([
+      {
+        $match: { supplierId: { $ne: supplierIdTest } }  // استبعاد المورد
+      },
       {
         $group: {
           _id: null,
@@ -98,10 +126,11 @@ exports.generateReport = async () => {
       }
     ]);
 
-    // المبيعات الشهرية
+    // المبيعات الشهرية مع استبعاد العميل الذي يحمل الاسم "test"
     const monthlySales = await Sell.aggregate([
       {
         $match: {
+          clientId: { $ne: clientIdTest },  // استبعاد العميل
           entry_date: {
             $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // بداية الشهر الحالي
             $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)  // بداية الشهر القادم
@@ -117,10 +146,11 @@ exports.generateReport = async () => {
       }
     ]);
 
-    // المشتريات الشهرية
+    // المشتريات الشهرية مع استبعاد المورد الذي يحمل الاسم "Test"
     const monthlyPurchases = await Buy.aggregate([
       {
         $match: {
+          supplierId: { $ne: supplierIdTest },  // استبعاد المورد
           Entry_date: {
             $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1), // بداية الشهر الحالي
             $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)  // بداية الشهر القادم
@@ -150,8 +180,6 @@ exports.generateReport = async () => {
       monthlySales,
       monthlyPurchases
     };
-
-    
 
   } catch (error) {
     console.error("Error generating report:", error.message);
