@@ -241,10 +241,10 @@ const bell = await Sell_bell.find({
 })
 .populate({ path: 'clint', select: 'clint_name' });
 
-const tax = await clint_tax.find({ clint: clientId })
+const chBack = await check_back.find({ clint: clientId })
     .populate({ path: 'clint', select: 'clint_name money_on' });
 
-if (!bell.length &&!tax.length) {
+if (!bell.length &&!chBack.length) {
   return next(new ApiError(`No transactions found for supplier with ID: ${clientId}, 404`));
 }
 
