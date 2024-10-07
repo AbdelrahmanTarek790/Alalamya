@@ -83,7 +83,7 @@ const SellSchema = new mongoose.Schema(
 SellSchema.pre(/^find/, function (next) {
   this.populate({ path: 'user', select: 'name -_id' })
     .populate({ path: 'product', select: 'type avg_price weight wight_money _id' })
-    .populate({ path: 'clint', select: 'clint_name money_pay money_on _id' });
+    .populate({ path: 'clint', select: 'clint_name money_pay money_on first_trade _id' });
 
   next();
 });
