@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const ApiError = require('../utils/apiError');
 const ApiFeatures = require('../utils/apiFeatures');
 const factory = require('./handlersFactory');
+const ExcelJS = require('exceljs');
 const Buy_bell = require('../models/Buy_bellModel');
 const Supplayr =require('../models/SupplayrModel');
 
@@ -91,3 +92,75 @@ exports.deleteBuy_bell = asyncHandler(async (req, res, next) => {
   });
 
 
+  exports.exportSupplierChecksToExcel = asyncHandler(async (req, res, next) => {
+    // الحصول على جميع الموردين
+    const allSuppliers = await Supplayr.find();
+  
+    if (!allSuppliers.length) {
+      return next(new ApiError('No suppliers found', 404));
+    }
+  
+    // إعداد Workbook جديد وورقة عمل واحدة
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('شيكات الموردين');
+  
+    // إضافة صف الرأس إلى الورقة
+    worksheet.addRow(['اسم المورد', 'تاريخ الإدخال', 'تاريخ الشيك', 'المبلغ', 'اسم البنك', 'رقم الشيك', 'الملاحظات']).font = { bold: true };
+  
+    const allEntries = []; // تهيئة مصفوفة لتخزين جميع البيانات
+  
+    for (const supplier of allSuppliers) {
+      // الحصول على جميع الفواتير الخاصة بالمورد والمدفوعة بواسطة الشيكات
+      const buyBell = await Buy_bell.find({
+        supplayr: supplier._id,
+        payment_method: 'check' // فقط الفواتير المدفوعة بواسطة الشيكات
+      }).populate({ path: 'supplayr', select: 'supplayr_name' });
+  
+      if (!buyBell.length) {
+        continue; // الانتقال للمورد التالي إذا لم يكن هناك بيانات
+      }
+  
+      buyBell.forEach(bell => {
+        // التأكد من أن الحقل Entry_date و check_date معرفين
+        const entryDate = bell.Entry_date ? new Date(bell.Entry_date) : new Date(); // استخدم تاريخ الإدخال أو التاريخ الحالي
+        const checkDate = bell.check_date ? new Date(bell.check_date) : ''; // إذا لم يكن هناك تاريخ شيك، نتركه فارغًا
+  
+        // إضافة بيانات الشيك إلى المصفوفة
+        allEntries.push({
+          date: entryDate, // استخدام تاريخ الإدخال لترتيب البيانات
+          row: [
+            supplier.supplayr_name, // اسم المورد
+            entryDate.toLocaleDateString('ar-EG', { dateStyle: 'short' }), // تاريخ الإدخال
+            checkDate ? checkDate.toLocaleDateString('ar-EG', { dateStyle: 'short' }) : '', // تاريخ الشيك
+            bell.pay_bell, // المبلغ
+            bell.bank_name, // اسم البنك
+            bell.check_number, // رقم الشيك
+            bell.Notes || '' // الملاحظات
+          ]
+        });
+      });
+    }
+  
+    // ترتيب جميع الإدخالات حسب تاريخ الإدخال من الأقدم إلى الأحدث
+    allEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+    // إضافة البيانات المرتبة إلى الورقة
+    allEntries.forEach(entry => {
+      const row = worksheet.addRow(entry.row);
+      row.alignment = { horizontal: 'center' };
+    });
+  
+    // إعداد حجم الأعمدة
+    for (let i = 1; i <= 7; i++) {
+      worksheet.getColumn(i).width = 30;
+      worksheet.getColumn(i).alignment = { horizontal: 'center' };
+    }
+  
+    // إعداد رؤوس الاستجابة
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=all_suppliers_checks.xlsx`);
+  
+    // كتابة الملف إلى الاستجابة
+    await workbook.xlsx.write(res);
+    res.end();
+  });

@@ -12,13 +12,15 @@ const {
   createSell_bell,
   updateSell_bell,
   deleteSell_bell,
-  
-  
+  exportChecksToExcel, 
 } = require('../services/Sell_bellService');
 const authService = require('../services/authService');
 
 const router = express.Router();
-
+router
+  .route('/checks')
+  .get(exportChecksToExcel);
+  
 router
   .route('/')
   .get(authService.protect,
@@ -47,7 +49,7 @@ router
     deleteSell_bellValidator,
     deleteSell_bell
   );
-  
+
 
 
 module.exports = router;

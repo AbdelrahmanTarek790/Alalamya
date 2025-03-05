@@ -6,7 +6,7 @@ const {
   createWarehouse,
   updateWarehouse,
   deleteWarehouse,
-  printExcel,
+  printProductComparisonExcel,
   
 } = require('../services/WarehouseService');
 const authService = require('../services/authService');
@@ -36,10 +36,12 @@ router
     authService.allowedTo('admin'),
     deleteWarehouse
   );
+ 
+
   router
-  .route('/export/excel')
+  .route('/export/size')
   .get(
-    printExcel
+    printProductComparisonExcel
   );
 
 
