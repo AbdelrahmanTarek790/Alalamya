@@ -154,8 +154,8 @@ exports.deleteWarehouse = factory.deleteOne(Warehouse);
       { header: 'وزن توب كرافت', key: 'top_karft_weight', width: 15 }
     ];
   
-    worksheet.getRow(1).font = { bold: true, color: { argb: '#ffffff' } };
-    worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '#e30914ff' } };
+    worksheet.getRow(1).font = { bold: true, color: { argb: '000000' } };
+    worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '#00b300' } };
     worksheet.getRow(1).alignment = { horizontal: 'center' };
   
     sizes.forEach((size, index) => {
@@ -184,7 +184,7 @@ exports.deleteWarehouse = factory.deleteOne(Warehouse);
         top_karft_weight: topKarftWeight,
       });
       row.font = { bold: true, color: { argb: '000000' } };
-    row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '#F0DE89' } };
+    row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F0DE89' } };
     row.border = {
       top: { style: 'thin', color: { argb: '000000' } },
       left: { style: 'thin', color: { argb: '000000' } },
