@@ -154,8 +154,8 @@ exports.deleteWarehouse = factory.deleteOne(Warehouse);
       { header: 'وزن توب كرافت', key: 'top_karft_weight', width: 15 }
     ];
   
-    worksheet.getRow(1).font = { bold: true, color: { argb: '000000' } };
-    worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '#00b300' } };
+    worksheet.getRow(1).font = { bold: true, color: { argb: '#FFFFFF' } }; 
+    worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '#FF0000' } }; 
     worksheet.getRow(1).alignment = { horizontal: 'center' };
   
     sizes.forEach((size, index) => {
