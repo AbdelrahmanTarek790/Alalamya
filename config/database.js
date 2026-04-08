@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 
-let db =String("mongodb+srv://adhammarwa:reem182001@cluster0.n8lnfxx.mongodb.net/?appName=Cluster0");
+let db =String(process.env.DB_URI);
 
 const dbConnection = () => {
 mongoose.set('strictQuery', true);
