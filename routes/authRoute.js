@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 
-router.post('/signup', signupValidator, signup);
+router.post('/signup',signup);
 router.post('/login', loginValidator, login);
 router.get('/me',getUserData);
 module.exports = router;
