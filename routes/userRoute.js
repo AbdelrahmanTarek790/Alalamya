@@ -22,7 +22,7 @@ const router = express.Router();
 
 
 // Admin
-router.use(authService.protect,authService.allowedTo('admin'));
+
 
 router
   .route('/')
