@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dbConnection = async () => {
   try {
-    const db = process.env.DB_URI;
+    const db = "mongodb+srv://adhammarwa:reem182001@cluster0.n8lnfxx.mongodb.net/?appName=Cluster0";
 
     // ✅ تحقق إن المتغير موجود
     if (!db) {
