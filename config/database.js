@@ -8,10 +8,10 @@ mongoose.set('strictQuery', true);
   mongoose
     .connect(db,{ useNewUrlParser: true, useUnifiedTopology: true  })
     .then((conn) => {
-      console.log(Database Connected: ${`conn.connection.host`});
+      console.log(`Database Connected: ${conn.connection.host}`);
     })
     .catch((err) => {
-      console.error(Database Error: ${`err`});
+      console.error(`Database Error: ${err}`);
      process.exit(1);
     });
 };
